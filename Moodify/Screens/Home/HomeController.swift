@@ -129,7 +129,6 @@ extension HomeController {
     func sendImageToServer(_ image: UIImage) {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else { return }
         
-        // Backend URL (local serverin IP və portu)
         let url = URL(string: "http://192.168.1.84:8000/analyze-mood")!
         
         var request = URLRequest(url: url)
@@ -138,7 +137,6 @@ extension HomeController {
         let boundary = UUID().uuidString
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         
-        // Body yarat
         var data = Data()
         data.append("--\(boundary)\r\n".data(using: .utf8)!)
         data.append("Content-Disposition: form-data; name=\"file\"; filename=\"image.jpg\"\r\n".data(using: .utf8)!)
@@ -148,7 +146,6 @@ extension HomeController {
         
         request.httpBody = data
         
-        // Sorğu göndər
         let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             if let error = error {
                 print("Error:", error)
