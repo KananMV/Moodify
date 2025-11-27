@@ -7,8 +7,13 @@
 
 import UIKit
 import AVFoundation
+import AWSRekognition
+
+
 
 class HomeController: UIViewController {
+    
+    private let vm = HomeViewModel()
     
     private let topLabel: UILabel = {
        let label = UILabel()
@@ -36,6 +41,7 @@ class HomeController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        configureViewModel()
     }
     
     private func setupView() {
@@ -111,67 +117,25 @@ class HomeController: UIViewController {
             break
         }
     }
+    
+    func configureViewModel() {
+        vm.onEmotionUpdated = { [weak self] emotion in
+            guard let self else { return }
+            self.topLabel.text = emotion
+        }
+    }
+    
 
 
 }
 
 extension HomeController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    func imagePickerController(
+        _ picker: UIImagePickerController,
+        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true)
-        
         if let selectedImage = info[.originalImage] as? UIImage {
-            sendImageToServer(selectedImage)
+            vm.analyze(image: selectedImage)
         }
-    }
-}
-
-extension HomeController {
-    func sendImageToServer(_ image: UIImage) {
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else { return }
-        
-        let url = URL(string: "http://192.168.1.84:8000/analyze-mood")!
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        
-        let boundary = UUID().uuidString
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
-        var data = Data()
-        data.append("--\(boundary)\r\n".data(using: .utf8)!)
-        data.append("Content-Disposition: form-data; name=\"file\"; filename=\"image.jpg\"\r\n".data(using: .utf8)!)
-        data.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-        data.append(imageData)
-        data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
-        
-        request.httpBody = data
-        
-        let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            if let error = error {
-                print("Error:", error)
-                return
-            }
-            
-            guard let data = data else { return }
-            if let jsonString = String(data: data, encoding: .utf8) {
-                print("Server response:", jsonString)
-            }
-            
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                   let mood = json["mood"] as? String {
-                    DispatchQueue.main.async {
-                        self?.topLabel.text = "Mood: \(mood.capitalized)"
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self?.topLabel.text = "Mood: Unknown"
-                    }
-                }
-            } catch {
-                print("JSON parse error:", error)
-            }
-        }
-        task.resume()
     }
 }

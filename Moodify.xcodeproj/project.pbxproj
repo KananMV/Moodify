@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6E9F70B42ED8470D0032759A /* AWSAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 6E9F70B32ED8470D0032759A /* AWSAuthCore */; };
+		6E9F70B62ED8470D0032759A /* AWSRekognition in Frameworks */ = {isa = PBXBuildFile; productRef = 6E9F70B52ED8470D0032759A /* AWSRekognition */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		6E45CD6A2ED326B7000B6598 /* Moodify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moodify.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6E9F70B62ED8470D0032759A /* AWSRekognition in Frameworks */,
+				6E9F70B42ED8470D0032759A /* AWSAuthCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +85,8 @@
 			);
 			name = Moodify;
 			packageProductDependencies = (
+				6E9F70B32ED8470D0032759A /* AWSAuthCore */,
+				6E9F70B52ED8470D0032759A /* AWSRekognition */,
 			);
 			productName = Moodify;
 			productReference = 6E45CD6A2ED326B7000B6598 /* Moodify.app */;
@@ -107,6 +116,9 @@
 			);
 			mainGroup = 6E45CD612ED326B7000B6598;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6E9F70B22ED8470D0032759A /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 6E45CD6B2ED326B7000B6598 /* Products */;
 			projectDirPath = "";
@@ -333,6 +345,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6E9F70B22ED8470D0032759A /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/aws-amplify/aws-sdk-ios-spm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.41.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6E9F70B32ED8470D0032759A /* AWSAuthCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E9F70B22ED8470D0032759A /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */;
+			productName = AWSAuthCore;
+		};
+		6E9F70B52ED8470D0032759A /* AWSRekognition */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E9F70B22ED8470D0032759A /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */;
+			productName = AWSRekognition;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6E45CD622ED326B7000B6598 /* Project object */;
 }

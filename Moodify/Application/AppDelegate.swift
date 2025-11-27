@@ -6,14 +6,28 @@
 //
 
 import UIKit
+import AWSCore
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-
-
+    
+    
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        let credentialsProvider = AWSStaticCredentialsProvider(
+            accessKey: "AKIAUQPVPFRLRJ2TPE74",
+            secretKey: "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"
+        )
+        
+        let configuration = AWSServiceConfiguration(
+            region: .USEast1,
+            credentialsProvider: credentialsProvider
+        )
+        
+        AWSServiceManager.default().defaultServiceConfiguration = configuration
+        
         return true
     }
 
@@ -30,6 +44,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
+    
+    
 
 
 }
