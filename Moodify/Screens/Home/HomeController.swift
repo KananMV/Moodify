@@ -16,7 +16,7 @@ class HomeController: UIViewController {
     private let vm = HomeViewModel()
     
     private let topLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.text = "How are you feeling today?"
         label.textColor = .label
         label.font = .systemFont(ofSize: 28, weight: .bold)
@@ -25,7 +25,7 @@ class HomeController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-
+    
     private lazy var moodButton: UIButton = {
         let button = UIButton()
         button.setTitle("Scan Mood", for: .normal)
@@ -74,7 +74,7 @@ class HomeController: UIViewController {
     
     func presentImagePicker() {
         let imagePicker = UIImagePickerController()
-        imagePicker.sourceType = .camera 
+        imagePicker.sourceType = .camera
         imagePicker.delegate = self
         present(imagePicker, animated: true)
     }
@@ -100,15 +100,15 @@ class HomeController: UIViewController {
                 message: "To continue, please allow camera access in Settings.",
                 preferredStyle: .alert
             )
-
+            
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-
+            
             alert.addAction(UIAlertAction(title: "Open Settings", style: .default, handler: { _ in
                 if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(settingsURL)
                 }
             }))
-
+            
             self.present(alert, animated: true)
             
         case .authorized:
@@ -125,14 +125,13 @@ class HomeController: UIViewController {
         }
     }
     
-
-
+    
+    
 }
 
 extension HomeController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(
-        _ picker: UIImagePickerController,
-        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    func imagePickerController(_ picker: UIImagePickerController,
+                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true)
         if let selectedImage = info[.originalImage] as? UIImage {
             vm.analyze(image: selectedImage)
