@@ -16,9 +16,11 @@ class OnboardingPageViewController: UIPageViewController, UIPageViewControllerDa
     ]
     
     lazy var pages: [UIViewController] = {
-        return pagesData.map { model in
+        return pagesData.enumerated().map { index, model in
             let vc = OnboardController()
             vc.model = model
+            vc.pageIndex = index
+            vc.totalCount = pagesData.count
             vc.onNext = { [weak self] in
                 guard let self else { return }
                 
@@ -34,16 +36,33 @@ class OnboardingPageViewController: UIPageViewController, UIPageViewControllerDa
         dataSource = self
         
         if let first = pages.first {
-            setViewControllers([first], direction: .forward, animated: true)
+            setViewControllers([first], direction: .forward, animated: false)
         }
     }
     
     func goToNextPage(currentVC: UIViewController) {
         guard let index = pages.firstIndex(of: currentVC) else { return }
         let nextIndex = index + 1
-        guard nextIndex < pages.count else { return }
-        let next = pages[nextIndex]
-        setViewControllers([next], direction: .forward, animated: true)
+        
+        if nextIndex < pages.count {
+            let next = pages[nextIndex]
+            UIView.transition(with: view,
+                              duration: 0.5,
+                              options: .transitionCrossDissolve,
+                              animations: {
+                self.setViewControllers([next],
+                                        direction: .forward,
+                                        animated: false)
+            },
+                              completion: nil)
+            return
+        }
+        finishOnboarding()
+    }
+    
+    private func finishOnboarding() {
+        UserDefaultsManager.shared.saveDataBool(value: false, key: .isFirstTimeLaunch)
+        NotificationCenter.default.post(name: .didSeenOnboardNotification, object: nil)
     }
     
     func pageViewController(_ pageViewController: UIPageViewController,
@@ -52,7 +71,6 @@ class OnboardingPageViewController: UIPageViewController, UIPageViewControllerDa
         guard let index = pages.firstIndex(of: viewController), index > 0 else {
             return nil
         }
-        
         return pages[index - 1]
     }
     
@@ -62,7 +80,6 @@ class OnboardingPageViewController: UIPageViewController, UIPageViewControllerDa
         guard let index = pages.firstIndex(of: viewController), index < pages.count - 1 else {
             return nil
         }
-        
         return pages[index + 1]
     }
     

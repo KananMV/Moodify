@@ -19,9 +19,45 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = HomeController()
+        NotificationCenter.default.addObserver(self, selector: #selector(changeRootToEntryFromOnboard), name: .didSeenOnboardNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(changeRootToHome), name: .didloginNotification, object: nil)
+        
+        setupInitialRoot()
+        
         window?.makeKeyAndVisible()
         
+    }
+    
+    func setupInitialRoot() {
+        let isFirstTime = UserDefaultsManager.shared.getBool(key: .isFirstTimeLaunch)
+        let isLoggedIn = UserDefaultsManager.shared.getBool(key: .isLogedIn)
+        print(isLoggedIn)
+        
+        if isFirstTime {
+            window?.rootViewController = OnboardingPageViewController()
+            
+        } else if !isLoggedIn {
+            let entryVC = EntryController()
+            window?.rootViewController = UINavigationController(rootViewController: entryVC)
+            
+        } else {
+            window?.rootViewController = TabBarViewController()
+        }
+    }
+    
+    @objc func changeRootToEntryFromOnboard() {
+        guard let window = window else { return }
+        UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: {
+            window.rootViewController = UINavigationController(rootViewController: EntryController())
+        })
+    }
+    
+    @objc func changeRootToHome() {
+        guard let window = window else { return }
+        UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: {
+            window.rootViewController = TabBarViewController()
+        })
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
