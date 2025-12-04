@@ -1,4 +1,3 @@
-import UIKit
 import AWSRekognition
 
 final class AWSRekognitionManager {
@@ -9,16 +8,11 @@ final class AWSRekognitionManager {
     private init() {}
     
     func detectTopEmotion(
-        image: UIImage,
+        image: Data,
         completion: @escaping (_ emotion: AWSRekognitionEmotionName, _ confidence: Double) -> Void) {
             
-            guard let imageData = image.jpegData(compressionQuality: 0.7) else {
-                completion(.unknown, 0)
-                return
-            }
-            
             let awsImage = AWSRekognitionImage()
-            awsImage?.bytes = imageData
+            awsImage?.bytes = image
             
             let request = AWSRekognitionDetectFacesRequest()
             request?.image = awsImage

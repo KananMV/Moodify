@@ -134,7 +134,9 @@ extension HomeController: UIImagePickerControllerDelegate, UINavigationControlle
                                didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true)
         if let selectedImage = info[.originalImage] as? UIImage {
-            vm.analyze(image: selectedImage)
+            
+            guard let data = selectedImage.jpegData(compressionQuality: 0.7) else { return }
+            vm.analyze(image: data)
         }
     }
 }

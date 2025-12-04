@@ -1,12 +1,11 @@
 import Foundation
-import UIKit
 import AWSRekognition
 
 final class HomeViewModel {
 
     var onEmotionUpdated: ((String) -> Void)?
 
-    func analyze(image: UIImage) {
+    func analyze(image: Data) {
         AWSRekognitionManager.shared.detectTopEmotion(image: image) { emotion, confidence in
 
             let text: String
