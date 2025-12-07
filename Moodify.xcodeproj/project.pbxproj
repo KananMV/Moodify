@@ -7,8 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6E5BE39B2EE5ACBA00825902 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 6E5BE39A2EE5ACBA00825902 /* FirebaseAuth */; };
+		6E5BE39D2EE5ACBA00825902 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 6E5BE39C2EE5ACBA00825902 /* FirebaseCore */; };
+		6E5BE39F2EE5ACBA00825902 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 6E5BE39E2EE5ACBA00825902 /* FirebaseFirestore */; };
+		6E5BE3A12EE5ACBA00825902 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 6E5BE3A02EE5ACBA00825902 /* FirebaseStorage */; };
 		6E9F70B42ED8470D0032759A /* AWSAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 6E9F70B32ED8470D0032759A /* AWSAuthCore */; };
 		6E9F70B62ED8470D0032759A /* AWSRekognition in Frameworks */ = {isa = PBXBuildFile; productRef = 6E9F70B52ED8470D0032759A /* AWSRekognition */; };
+		6EE26DF72EE4353000733896 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 6EE26DF62EE4353000733896 /* Lottie */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,7 +47,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				6E9F70B62ED8470D0032759A /* AWSRekognition in Frameworks */,
+				6E5BE39D2EE5ACBA00825902 /* FirebaseCore in Frameworks */,
 				6E9F70B42ED8470D0032759A /* AWSAuthCore in Frameworks */,
+				6EE26DF72EE4353000733896 /* Lottie in Frameworks */,
+				6E5BE3A12EE5ACBA00825902 /* FirebaseStorage in Frameworks */,
+				6E5BE39B2EE5ACBA00825902 /* FirebaseAuth in Frameworks */,
+				6E5BE39F2EE5ACBA00825902 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,6 +97,11 @@
 			packageProductDependencies = (
 				6E9F70B32ED8470D0032759A /* AWSAuthCore */,
 				6E9F70B52ED8470D0032759A /* AWSRekognition */,
+				6EE26DF62EE4353000733896 /* Lottie */,
+				6E5BE39A2EE5ACBA00825902 /* FirebaseAuth */,
+				6E5BE39C2EE5ACBA00825902 /* FirebaseCore */,
+				6E5BE39E2EE5ACBA00825902 /* FirebaseFirestore */,
+				6E5BE3A02EE5ACBA00825902 /* FirebaseStorage */,
 			);
 			productName = Moodify;
 			productReference = 6E45CD6A2ED326B7000B6598 /* Moodify.app */;
@@ -118,6 +133,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				6E9F70B22ED8470D0032759A /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */,
+				6EE26DF52EE4353000733896 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				6E5BE3992EE5ACBA00825902 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 6E45CD6B2ED326B7000B6598 /* Products */;
@@ -347,6 +364,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		6E5BE3992EE5ACBA00825902 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.6.0;
+			};
+		};
 		6E9F70B22ED8470D0032759A /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/aws-amplify/aws-sdk-ios-spm";
@@ -355,9 +380,37 @@
 				minimumVersion = 2.41.0;
 			};
 		};
+		6EE26DF52EE4353000733896 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		6E5BE39A2EE5ACBA00825902 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E5BE3992EE5ACBA00825902 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		6E5BE39C2EE5ACBA00825902 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E5BE3992EE5ACBA00825902 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		6E5BE39E2EE5ACBA00825902 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E5BE3992EE5ACBA00825902 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		6E5BE3A02EE5ACBA00825902 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E5BE3992EE5ACBA00825902 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
 		6E9F70B32ED8470D0032759A /* AWSAuthCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 6E9F70B22ED8470D0032759A /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */;
@@ -367,6 +420,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6E9F70B22ED8470D0032759A /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */;
 			productName = AWSRekognition;
+		};
+		6EE26DF62EE4353000733896 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6EE26DF52EE4353000733896 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

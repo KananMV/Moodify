@@ -7,14 +7,14 @@
 
 import UIKit
 
-class ExploreController: UIViewController {
+class ExploreController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
     }
     
-    func setupView() {
+    override func setupView() {
         view.backgroundColor = UIColor(named: "controllerBackColor")
     }
 

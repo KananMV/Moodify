@@ -11,9 +11,27 @@ import AWSRekognition
 
 
 
-class HomeController: UIViewController {
+class HomeController: BaseViewController {
     
-    private let vm = HomeViewModel()
+    private let vm = HomeViewModel(emotionAnalyzer: AWSAdapter())
+    private let moods: [EmotionType] = [
+        .happy, .sad, .angry, .confused, .disgusted, .surprised, .calm, .fear
+    ]
+    
+    private lazy var collectionView: SelfSizingCollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        let collectionView = SelfSizingCollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.delegate = self
+        collectionView.isScrollEnabled = false
+        collectionView.dataSource = self
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.register(MoodsCollectionViewCell.self, forCellWithReuseIdentifier: "MoodsCollectionViewCell")
+        
+        return collectionView
+    }()
     
     private let topLabel: UILabel = {
         let label = UILabel()
@@ -38,30 +56,42 @@ class HomeController: UIViewController {
         return button
     }()
     
+    private var selectedIndex: IndexPath?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         configureViewModel()
     }
     
-    private func setupView() {
+    override func setupView() {
         view.backgroundColor = UIColor(named: "controllerBackColor")
         title = "Moodify"
         view.addSubview(topLabel)
         view.addSubview(moodButton)
+        view.addSubview(collectionView)
         
-        setupCons()
+        setupConstraints()
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.isHidden = false
     }
     
-    private func setupCons() {
+    
+    override func setupConstraints() {
         let constraints = [
             topLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            topLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            topLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            topLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.92),
+            topLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            moodButton.topAnchor.constraint(equalTo: topLabel.bottomAnchor, constant: 16),
-            moodButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            moodButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            collectionView.topAnchor.constraint(equalTo: topLabel.bottomAnchor, constant: 16),
+            collectionView.leadingAnchor.constraint(equalTo: topLabel.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: topLabel.trailingAnchor),
+            
+            moodButton.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 16),
+            moodButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            moodButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.92),
             moodButton.heightAnchor.constraint(equalToConstant: 48)
         ]
         
@@ -117,26 +147,75 @@ class HomeController: UIViewController {
             break
         }
     }
-    
-    func configureViewModel() {
-        vm.onEmotionUpdated = { [weak self] emotion in
-            guard let self else { return }
-            self.topLabel.text = emotion
-        }
-    }
-    
-    
-    
 }
 
 extension HomeController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController,
                                didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        picker.dismiss(animated: true)
-        if let selectedImage = info[.originalImage] as? UIImage {
-            
-            guard let data = selectedImage.jpegData(compressionQuality: 0.7) else { return }
-            vm.analyze(image: data)
+        
+        guard let selectedImage = info[.originalImage] as? UIImage else { return }
+        let fixedImage = selectedImage.fixedFrontCameraOrientation()
+        
+        guard let data = fixedImage.jpegData(compressionQuality: 0.7) else { return }
+        
+        let cordinator = ScanCordinator(navigation: self.navigationController ?? UINavigationController(), pickedImage: data)
+        
+        picker.dismiss(animated: true) {
+            cordinator.start()
         }
+    }
+    
+    func updateButtonText(_ text: String) {
+        UIView.transition(with: moodButton,
+                          duration: 0.25,
+                          options: .transitionCrossDissolve,
+                          animations: {
+            self.moodButton.setTitle(text, for: .normal)
+        }, completion: nil)
+    }
+}
+
+extension HomeController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return moods.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MoodsCollectionViewCell", for: indexPath) as? MoodsCollectionViewCell else { return UICollectionViewCell() }
+        cell.configure(emotion: moods[indexPath.row])
+        
+        if selectedIndex == indexPath {
+            cell.setSelectedState(true)
+        } else {
+            cell.setSelectedState(false)
+        }
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if selectedIndex == indexPath {
+            selectedIndex = nil
+            updateButtonText("Scan Mood")
+        }else {
+            selectedIndex = indexPath
+            let selectedEmotion = moods[indexPath.item]
+            updateButtonText("Search playlist for \(selectedEmotion.rawValue) mood")
+        }
+        collectionView.reloadData()
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        let emotion = moods[indexPath.item]
+        let text = emotion.rawValue
+        
+        let font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        let textWidth = (text as NSString).size(withAttributes: [.font: font]).width
+        let width = textWidth + 12
+        return CGSize(width: width, height: 50)
     }
 }

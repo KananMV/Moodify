@@ -7,7 +7,7 @@
 
 import UIKit
 
-class EntryController: UIViewController {
+class EntryController: BaseViewController {
     
     private let topLabel: UILabel = {
         let label = UILabel()
@@ -85,7 +85,7 @@ class EntryController: UIViewController {
         
     }
     
-    private func setupView() {
+    override func setupView() {
         title = "Moodify"
         view.backgroundColor = UIColor(named: "controllerBackColor")
         view.addSubview(topLabel)
@@ -96,12 +96,12 @@ class EntryController: UIViewController {
         setupConstraints()
     }
     
-    private func setupConstraints() {
+    override func setupConstraints() {
         
         let constraints = [
             topLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
-            topLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            topLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            topLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.92),
+            topLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
             descriptionLabel.topAnchor.constraint(equalTo: topLabel.bottomAnchor, constant: 12),
             descriptionLabel.leadingAnchor.constraint(equalTo: topLabel.leadingAnchor),
@@ -121,8 +121,8 @@ class EntryController: UIViewController {
     }
     
     @objc func emailButtonTapped() {
-        let vc = LoginController()
-        navigationController?.show(vc, sender: nil)
+        let cordinator = LoginCordinator(navigationController: self.navigationController ?? UINavigationController())
+        cordinator.start()
     }
     
 }

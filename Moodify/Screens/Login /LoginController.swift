@@ -6,8 +6,9 @@
 //
 
 import UIKit
+import Lottie
 
-class LoginController: UIViewController {
+class LoginController: BaseViewController {
     
     private let topLabel: UILabel = {
         let label = UILabel()
@@ -20,11 +21,13 @@ class LoginController: UIViewController {
         return label
     }()
     
+    
     private lazy var emailTextField: UITextField = {
         let tf = UITextField()
         tf.placeholder = "Email adress"
         tf.textColor = .label
         tf.layer.cornerRadius = 12
+        tf.autocapitalizationType = .none
         tf.backgroundColor = UIColor(named: "secondButtonColor")
         tf.heightAnchor.constraint(equalToConstant: 56).isActive = true
         tf.translatesAutoresizingMaskIntoConstraints = false
@@ -54,6 +57,7 @@ class LoginController: UIViewController {
         
         return tf
     }()
+
     
     private lazy var passwordToggleButton: UIButton = {
         let btn = UIButton(type: .system)
@@ -110,24 +114,35 @@ class LoginController: UIViewController {
         return button
     }()
     
+    private var animationView: LottieAnimationView = {
+        let view = LottieAnimationView(name: "Loading")
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.loopMode = .loop
+        view.contentMode = .scaleAspectFit
+        view.isHidden = true
+        return view
+    }()
+    
+    let vm = LoginViewModel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
     }
     
-    private func setupView() {
+    override func setupView() {
         view.backgroundColor = UIColor(named: "controllerBackColor")
-        let items = [topLabel, stackView, loginButton, signUpButton]
+        let items = [topLabel, stackView, loginButton, signUpButton, animationView]
         items.forEach { view.addSubview($0) }
         passwordTextField.delegate = self
         setupConstraints()
     }
     
-    private func setupConstraints() {
+    override func setupConstraints() {
         let constraints = [
             topLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
-            topLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            topLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            topLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.92),
+            topLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
             stackView.topAnchor.constraint(equalTo: topLabel.bottomAnchor, constant: 16),
             stackView.leadingAnchor.constraint(equalTo: topLabel.leadingAnchor),
@@ -139,20 +154,63 @@ class LoginController: UIViewController {
             
             signUpButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 8),
             signUpButton.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor),
-            signUpButton.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor)
+            signUpButton.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
+            
+            animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            animationView.topAnchor.constraint(equalTo: signUpButton.bottomAnchor,constant: -8),
+            animationView.widthAnchor.constraint(equalToConstant: 150),
+            animationView.heightAnchor.constraint(equalToConstant: 150)
         ]
         
         NSLayoutConstraint.activate(constraints)
     }
     
+    func startLoadingAnimation() {
+        animationView.isHidden = false
+        animationView.animation = LottieAnimation.named("Loading")
+        animationView.loopMode = .loop
+        navigationItem.hidesBackButton = true
+        view.isUserInteractionEnabled = false
+        animationView.play()
+    }
+    
+    func stopLoadingAnimation() {
+        animationView.stop()
+        navigationItem.hidesBackButton = false
+        view.isUserInteractionEnabled = true
+        animationView.isHidden = true
+    }
+    
     @objc private func loginTapped() {
-        UserDefaultsManager.shared.saveDataBool(value: true, key: .isLogedIn)
-        NotificationCenter.default.post(name: .didloginNotification, object: nil)
+        guard let email = emailTextField.text, !email.isEmpty,
+              let password = passwordTextField.text, !password.isEmpty else {
+            showAlert(title: "Fail", message: "Email or password is empty")
+            return }
+        
+        startLoadingAnimation()
+        Task {
+            do {
+                defer {
+                    stopLoadingAnimation()
+                }
+                
+                try await vm.login(email: email, password: password)
+                showAlert(title: "Success", message: "You are loged in") {
+                    UIApplication.sceneDelegate?.changeRootToHome()
+                    UserDefaultsManager.shared.saveDataBool(value: true, key: .isLogedIn)
+                }
+                
+            } catch {
+                showAlert(title: "Error", message: "\(error.localizedDescription) please try again")
+            }
+        }
+        
+        
     }
     
     @objc private func signUpTapped() {
-        let controller = SignupController()
-        navigationController?.pushViewController(controller, animated: true)
+        let cordinator = SignupCordinator(navigation: self.navigationController ?? UINavigationController())
+        cordinator.start()
     }
     
     

@@ -34,7 +34,6 @@ class OnboardingPageViewController: UIPageViewController, UIPageViewControllerDa
     override func viewDidLoad() {
         super.viewDidLoad()
         dataSource = self
-        
         if let first = pages.first {
             setViewControllers([first], direction: .forward, animated: false)
         }
@@ -61,8 +60,9 @@ class OnboardingPageViewController: UIPageViewController, UIPageViewControllerDa
     }
     
     private func finishOnboarding() {
+        
+        UIApplication.sceneDelegate?.changeRootToEntryFromOnboard()
         UserDefaultsManager.shared.saveDataBool(value: false, key: .isFirstTimeLaunch)
-        NotificationCenter.default.post(name: .didSeenOnboardNotification, object: nil)
     }
     
     func pageViewController(_ pageViewController: UIPageViewController,

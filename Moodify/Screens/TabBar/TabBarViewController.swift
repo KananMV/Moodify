@@ -14,12 +14,12 @@ class TabBarViewController: UITabBarController {
         setupAppearance()
     }
     private func setupAppearance() {
-        tabBar.tintColor = .red
+        tabBar.tintColor = .white
         tabBar.unselectedItemTintColor = .gray
         
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = .white
+        appearance.backgroundColor = .tabbar
         tabBar.standardAppearance = appearance
         tabBar.scrollEdgeAppearance = appearance
         
@@ -29,7 +29,7 @@ class TabBarViewController: UITabBarController {
     private func setupVC() {
         let homeVC = HomeController()
         let homeNav = UINavigationController(rootViewController: homeVC)
-        homeNav.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
+        homeNav.tabBarItem = UITabBarItem(title: "Home", image: .homeUnselectedTabIcon, selectedImage: .homeSelectedTabIcon)
         
         let exploreVC = ExploreController()
         let exploreNav = UINavigationController(rootViewController: exploreVC)

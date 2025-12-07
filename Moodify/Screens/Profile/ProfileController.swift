@@ -7,14 +7,18 @@
 
 import UIKit
 
-class ProfileController: UIViewController {
+class ProfileController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
     }
     
-    func setupView() {
+    override func setupConstraints() {
+        
+    }
+    
+    override func setupView() {
         view.backgroundColor = UIColor(named: "controllerBackColor")
     }
 }

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class OnboardController: UIViewController {
+class OnboardController: BaseViewController {
     
     var onNext: (() -> Void)?
     var pageIndex: Int = 0
@@ -71,7 +71,7 @@ class OnboardController: UIViewController {
         configure()
     }
     
-    private func setupView() {
+    override func setupView() {
         view.addSubview(imageView)
         view.addSubview(titleLabel)
         view.addSubview(descriptionLabel)
@@ -89,8 +89,8 @@ class OnboardController: UIViewController {
             
             
             titleLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 16),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
-            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
+            titleLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.84),
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
             descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
             descriptionLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),

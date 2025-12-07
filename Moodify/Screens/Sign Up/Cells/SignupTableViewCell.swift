@@ -1,14 +1,15 @@
 //
-//  SignupController.swift
+//  SignupTableViewCell.swift
 //  Moodify
 //
-//  Created by Kenan Memmedov on 01.12.25.
+//  Created by Kenan Memmedov on 08.12.25.
 //
 
 import UIKit
 import Lottie
 
-class SignupController: BaseViewController {
+class SignupTableViewCell: UITableViewCell {
+    
     
     private let topLabel: UILabel = {
         let label = UILabel()
@@ -105,7 +106,6 @@ class SignupController: BaseViewController {
         return view
     }()
     
-    
     private lazy var passwordToggleButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setImage(UIImage(systemName: "eye.slash"), for: .normal)
@@ -122,103 +122,44 @@ class SignupController: BaseViewController {
         return v
     }()
     
-    private let vm = SignupViewModel()
-    
     @objc private func togglePasswordVisibility() {
         passwordTextField.isSecureTextEntry.toggle()
         
         let imageName = passwordTextField.isSecureTextEntry ? "eye.slash" : "eye"
         passwordToggleButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        setupView()
-    }
     
-    override func setupView() {
-        view.backgroundColor = UIColor(named: "controllerBackColor")
-        let items = [topLabel, fullNameTextField ,emailTextField, passwordTextField, createButton, privacyAndPolicyLabel, animationView]
-        items.forEach { view.addSubview($0) }
-        passwordTextField.delegate = self
-        setupConstraints()
-    }
-    
-    override func setupConstraints() {
-         let constraints = [
-            topLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
-            topLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.92),
-            topLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            fullNameTextField.topAnchor.constraint(equalTo: topLabel.bottomAnchor, constant: 16),
-            fullNameTextField.leadingAnchor.constraint(equalTo: topLabel.leadingAnchor),
-            fullNameTextField.trailingAnchor.constraint(equalTo: topLabel.trailingAnchor),
-            
-            emailTextField.topAnchor.constraint(equalTo: fullNameTextField.bottomAnchor, constant: 16),
-            emailTextField.leadingAnchor.constraint(equalTo: fullNameTextField.leadingAnchor),
-            emailTextField.trailingAnchor.constraint(equalTo: fullNameTextField.trailingAnchor),
-            
-            passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 16),
-            passwordTextField.leadingAnchor.constraint(equalTo: emailTextField.leadingAnchor),
-            passwordTextField.trailingAnchor.constraint(equalTo: emailTextField.trailingAnchor),
-            
-            createButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 16),
-            createButton.leadingAnchor.constraint(equalTo: passwordTextField.leadingAnchor),
-            createButton.trailingAnchor.constraint(equalTo: passwordTextField.trailingAnchor),
-            
-            privacyAndPolicyLabel.topAnchor.constraint(equalTo: createButton.bottomAnchor, constant: 12),
-            privacyAndPolicyLabel.leadingAnchor.constraint(equalTo: createButton.leadingAnchor),
-            privacyAndPolicyLabel.trailingAnchor.constraint(equalTo: createButton.trailingAnchor),
-            
-            animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            animationView.topAnchor.constraint(equalTo: privacyAndPolicyLabel.bottomAnchor,constant: -8),
-            animationView.widthAnchor.constraint(equalToConstant: 150),
-            animationView.heightAnchor.constraint(equalToConstant: 150)
-         ]
+    @objc private func createButtonTapped() {
         
-        NSLayoutConstraint.activate(constraints)
     }
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     func startLoadingAnimation() {
         animationView.isHidden = false
         animationView.animation = LottieAnimation.named("Loading")
         animationView.loopMode = .loop
-        navigationItem.hidesBackButton = true
-        view.isUserInteractionEnabled = false
+//        navigationItem.hidesBackButton = true
+//        view.isUserInteractionEnabled = false
         animationView.play()
     }
     
     func stopLoadingAnimation() {
         animationView.stop()
-        navigationItem.hidesBackButton = false
-        view.isUserInteractionEnabled = true
-        view.layer.opacity = 1
+//        navigationItem.hidesBackButton = false
+//        view.isUserInteractionEnabled = true
         animationView.isHidden = true
     }
     
-    @objc func createButtonTapped() {
-        startLoadingAnimation()
-        Task {
-            guard let email = emailTextField.text, !email.isEmpty,
-                  let password = passwordTextField.text, !password.isEmpty,
-                  let fullName = fullNameTextField.text, !fullName.isEmpty else { return }
-            do {
-                defer {
-                    stopLoadingAnimation()
-                }
-                
-                try await vm.signUp(email: email, password: password, fullName: fullName)
-                showAlert(title: "Success", message: "You have successfully signed up!")
-            } catch {
-                showAlert(title: "Error", message: error.localizedDescription)
-            }
-        }
-       
-    }
-
+    
 }
-
-extension SignupController: UITextFieldDelegate {
+extension SignupTableViewCell: UITextFieldDelegate {
     func textField(_ textField: UITextField,
                    shouldChangeCharactersIn range: NSRange,
                    replacementString string: String) -> Bool {
@@ -231,3 +172,4 @@ extension SignupController: UITextFieldDelegate {
         return true
     }
 }
+

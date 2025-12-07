@@ -18,11 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-        window = UIWindow(windowScene: windowScene)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeRootToEntryFromOnboard), name: .didSeenOnboardNotification, object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(changeRootToHome), name: .didloginNotification, object: nil)
-        
+        window = UIWindow(windowScene: windowScene)        
         setupInitialRoot()
         
         window?.makeKeyAndVisible()
@@ -32,7 +28,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func setupInitialRoot() {
         let isFirstTime = UserDefaultsManager.shared.getBool(key: .isFirstTimeLaunch)
         let isLoggedIn = UserDefaultsManager.shared.getBool(key: .isLogedIn)
-        print(isLoggedIn)
         
         if isFirstTime {
             window?.rootViewController = OnboardingPageViewController()
