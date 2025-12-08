@@ -15,6 +15,7 @@ class SignupTableViewCell: UITableViewCell {
         let label = UILabel()
         label.text = "Create Account"
         label.textColor = .label
+        label.backgroundColor = .clear
         label.font = .systemFont(ofSize: 28, weight: .bold)
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -27,6 +28,7 @@ class SignupTableViewCell: UITableViewCell {
         tf.placeholder = "Full Name"
         tf.textColor = .label
         tf.layer.cornerRadius = 12
+        tf.delegate = self
         tf.backgroundColor = UIColor(named: "secondButtonColor")
         tf.heightAnchor.constraint(equalToConstant: 56).isActive = true
         tf.translatesAutoresizingMaskIntoConstraints = false
@@ -41,6 +43,7 @@ class SignupTableViewCell: UITableViewCell {
         let tf = UITextField()
         tf.placeholder = "Email adress"
         tf.textColor = .label
+        tf.delegate = self
         tf.layer.cornerRadius = 12
         tf.backgroundColor = UIColor(named: "secondButtonColor")
         tf.heightAnchor.constraint(equalToConstant: 56).isActive = true
@@ -57,6 +60,7 @@ class SignupTableViewCell: UITableViewCell {
         let tf = UITextField()
         tf.placeholder = "Password"
         tf.textColor = .label
+        tf.delegate = self
         tf.isSecureTextEntry = true
         tf.layer.cornerRadius = 12
         tf.backgroundColor = UIColor(named: "secondButtonColor")
@@ -106,6 +110,9 @@ class SignupTableViewCell: UITableViewCell {
         return view
     }()
     
+    var onCreateAccountTapped: ((_ fullname: String, _ email: String, _ password: String) -> Void)?
+    
+    
     private lazy var passwordToggleButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setImage(UIImage(systemName: "eye.slash"), for: .normal)
@@ -130,30 +137,77 @@ class SignupTableViewCell: UITableViewCell {
     }
     
     @objc private func createButtonTapped() {
-        
+        guard let email = emailTextField.text, !email.isEmpty,
+              let password = passwordTextField.text, !password.isEmpty,
+              let fullName = fullNameTextField.text, !fullName.isEmpty else { return }
+        onCreateAccountTapped?(fullName,email,password)
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupView()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private func setupView() {
+        backgroundColor = .clear
+        let items = [topLabel, fullNameTextField, emailTextField, passwordTextField, createButton, privacyAndPolicyLabel, animationView]
+        items.forEach { contentView.addSubview($0) }
+        
+        setupConstraints()
+    }
+    
+    private var animationBottomConstraint: NSLayoutConstraint!
+
+    private func setupConstraints() {
+
+        let constraints = [
+            topLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
+            topLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            topLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            
+            fullNameTextField.topAnchor.constraint(equalTo: topLabel.bottomAnchor, constant: 16),
+            fullNameTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            fullNameTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            
+            emailTextField.topAnchor.constraint(equalTo: fullNameTextField.bottomAnchor, constant: 8),
+            emailTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            emailTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            
+            passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 8),
+            passwordTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            passwordTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            
+            createButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 24),
+            createButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            createButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            
+            privacyAndPolicyLabel.topAnchor.constraint(equalTo: createButton.bottomAnchor, constant: 8),
+            privacyAndPolicyLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            privacyAndPolicyLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            
+            animationView.topAnchor.constraint(equalTo: privacyAndPolicyLabel.bottomAnchor, constant: 8),
+            animationView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            animationView.widthAnchor.constraint(equalToConstant: 150),
+            animationView.heightAnchor.constraint(equalToConstant: 150),
+            animationView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        ]
+        
+        NSLayoutConstraint.activate(constraints)
+    }
+    
     func startLoadingAnimation() {
         animationView.isHidden = false
         animationView.animation = LottieAnimation.named("Loading")
         animationView.loopMode = .loop
-//        navigationItem.hidesBackButton = true
-//        view.isUserInteractionEnabled = false
         animationView.play()
     }
     
     func stopLoadingAnimation() {
         animationView.stop()
-//        navigationItem.hidesBackButton = false
-//        view.isUserInteractionEnabled = true
         animationView.isHidden = true
     }
     

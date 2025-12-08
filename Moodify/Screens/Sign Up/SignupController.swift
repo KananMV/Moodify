@@ -10,126 +10,19 @@ import Lottie
 
 class SignupController: BaseViewController {
     
-    private let topLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Create Account"
-        label.textColor = .label
-        label.font = .systemFont(ofSize: 28, weight: .bold)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private lazy var fullNameTextField: UITextField = {
-        let tf = UITextField()
-        tf.placeholder = "Full Name"
-        tf.textColor = .label
-        tf.layer.cornerRadius = 12
-        tf.backgroundColor = UIColor(named: "secondButtonColor")
-        tf.heightAnchor.constraint(equalToConstant: 56).isActive = true
-        tf.translatesAutoresizingMaskIntoConstraints = false
-        tf.font = .systemFont(ofSize: 16)
-        tf.clearButtonMode = .whileEditing
-        tf.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
-        tf.leftViewMode = .always
-        return tf
-    }()
-    
-    private lazy var emailTextField: UITextField = {
-        let tf = UITextField()
-        tf.placeholder = "Email adress"
-        tf.textColor = .label
-        tf.layer.cornerRadius = 12
-        tf.backgroundColor = UIColor(named: "secondButtonColor")
-        tf.heightAnchor.constraint(equalToConstant: 56).isActive = true
-        tf.translatesAutoresizingMaskIntoConstraints = false
-        tf.font = .systemFont(ofSize: 16)
-        tf.clearButtonMode = .whileEditing
-        tf.autocapitalizationType = .none
-        tf.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
-        tf.leftViewMode = .always
-        return tf
-    }()
-    
-    private lazy var passwordTextField: UITextField = {
-        let tf = UITextField()
-        tf.placeholder = "Password"
-        tf.textColor = .label
-        tf.isSecureTextEntry = true
-        tf.layer.cornerRadius = 12
-        tf.backgroundColor = UIColor(named: "secondButtonColor")
-        tf.heightAnchor.constraint(equalToConstant: 56).isActive = true
-        tf.translatesAutoresizingMaskIntoConstraints = false
-        tf.font = .systemFont(ofSize: 16)
-        
-        tf.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
-        tf.leftViewMode = .always
-        
-        tf.rightView = passwordRightContainer
-        tf.rightViewMode = .whileEditing
-        
-        return tf
-    }()
-    
-    private lazy var createButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Create Account", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
-        button.layer.cornerRadius = 24
-        button.backgroundColor = UIColor(named: "buttonColor")
-        button.heightAnchor.constraint(equalToConstant: 48).isActive = true
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
-        return button
-    }()
-    
-    private let privacyAndPolicyLabel: UILabel = {
-        let label = UILabel()
-        label.text = "By continuing, you agree to our Terms of Service and Privacy Policy."
-        label.textColor = .label
-        label.font = .systemFont(ofSize: 14, weight: .light)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private var animationView: LottieAnimationView = {
-        let view = LottieAnimationView(name: "Loading")
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.loopMode = .loop
-        view.contentMode = .scaleAspectFit
-        view.isHidden = true
-        return view
-    }()
-    
-    
-    private lazy var passwordToggleButton: UIButton = {
-        let btn = UIButton(type: .system)
-        btn.setImage(UIImage(systemName: "eye.slash"), for: .normal)
-        btn.tintColor = .gray
-        btn.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
-        btn.addTarget(self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
-        return btn
-    }()
-    
-    private lazy var passwordRightContainer: UIView = {
-        let v = UIView(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
-        v.addSubview(passwordToggleButton)
-        passwordToggleButton.center = v.center
-        return v
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.backgroundColor = .clear
+        tableView.showsVerticalScrollIndicator = false
+        tableView.separatorStyle = .none
+        tableView.register(SignupTableViewCell.self, forCellReuseIdentifier: "SignupTableViewCell")
+        return tableView
     }()
     
     private let vm = SignupViewModel()
-    
-    @objc private func togglePasswordVisibility() {
-        passwordTextField.isSecureTextEntry.toggle()
-        
-        let imageName = passwordTextField.isSecureTextEntry ? "eye.slash" : "eye"
-        passwordToggleButton.setImage(UIImage(systemName: imageName), for: .normal)
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -139,95 +32,53 @@ class SignupController: BaseViewController {
     
     override func setupView() {
         view.backgroundColor = UIColor(named: "controllerBackColor")
-        let items = [topLabel, fullNameTextField ,emailTextField, passwordTextField, createButton, privacyAndPolicyLabel, animationView]
-        items.forEach { view.addSubview($0) }
-        passwordTextField.delegate = self
+        view.addSubview(tableView)
         setupConstraints()
     }
     
     override func setupConstraints() {
+        let keyboardGuide = view.keyboardLayoutGuide
          let constraints = [
-            topLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
-            topLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.92),
-            topLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            fullNameTextField.topAnchor.constraint(equalTo: topLabel.bottomAnchor, constant: 16),
-            fullNameTextField.leadingAnchor.constraint(equalTo: topLabel.leadingAnchor),
-            fullNameTextField.trailingAnchor.constraint(equalTo: topLabel.trailingAnchor),
-            
-            emailTextField.topAnchor.constraint(equalTo: fullNameTextField.bottomAnchor, constant: 16),
-            emailTextField.leadingAnchor.constraint(equalTo: fullNameTextField.leadingAnchor),
-            emailTextField.trailingAnchor.constraint(equalTo: fullNameTextField.trailingAnchor),
-            
-            passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 16),
-            passwordTextField.leadingAnchor.constraint(equalTo: emailTextField.leadingAnchor),
-            passwordTextField.trailingAnchor.constraint(equalTo: emailTextField.trailingAnchor),
-            
-            createButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 16),
-            createButton.leadingAnchor.constraint(equalTo: passwordTextField.leadingAnchor),
-            createButton.trailingAnchor.constraint(equalTo: passwordTextField.trailingAnchor),
-            
-            privacyAndPolicyLabel.topAnchor.constraint(equalTo: createButton.bottomAnchor, constant: 12),
-            privacyAndPolicyLabel.leadingAnchor.constraint(equalTo: createButton.leadingAnchor),
-            privacyAndPolicyLabel.trailingAnchor.constraint(equalTo: createButton.trailingAnchor),
-            
-            animationView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            animationView.topAnchor.constraint(equalTo: privacyAndPolicyLabel.bottomAnchor,constant: -8),
-            animationView.widthAnchor.constraint(equalToConstant: 150),
-            animationView.heightAnchor.constraint(equalToConstant: 150)
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            tableView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.92),
+            tableView.bottomAnchor.constraint(equalTo: keyboardGuide.topAnchor, constant: -8)
          ]
         
         NSLayoutConstraint.activate(constraints)
     }
-    func startLoadingAnimation() {
-        animationView.isHidden = false
-        animationView.animation = LottieAnimation.named("Loading")
-        animationView.loopMode = .loop
-        navigationItem.hidesBackButton = true
-        view.isUserInteractionEnabled = false
-        animationView.play()
-    }
-    
-    func stopLoadingAnimation() {
-        animationView.stop()
-        navigationItem.hidesBackButton = false
-        view.isUserInteractionEnabled = true
-        view.layer.opacity = 1
-        animationView.isHidden = true
-    }
-    
-    @objc func createButtonTapped() {
-        startLoadingAnimation()
-        Task {
-            guard let email = emailTextField.text, !email.isEmpty,
-                  let password = passwordTextField.text, !password.isEmpty,
-                  let fullName = fullNameTextField.text, !fullName.isEmpty else { return }
-            do {
-                defer {
-                    stopLoadingAnimation()
-                }
-                
-                try await vm.signUp(email: email, password: password, fullName: fullName)
-                showAlert(title: "Success", message: "You have successfully signed up!")
-            } catch {
-                showAlert(title: "Error", message: error.localizedDescription)
-            }
-        }
-       
-    }
-
 }
 
-extension SignupController: UITextFieldDelegate {
-    func textField(_ textField: UITextField,
-                   shouldChangeCharactersIn range: NSRange,
-                   replacementString string: String) -> Bool {
-        guard textField == passwordTextField else { return true }
-        let isDeleting = string.isEmpty && range.length == 1
-        if passwordTextField.isSecureTextEntry && isDeleting {
-            passwordTextField.text = ""
-            return false
-        }
-        return true
+extension SignupController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        1
     }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "SignupTableViewCell") as? SignupTableViewCell else { return UITableViewCell() }
+        cell.selectionStyle = .none
+        cell.onCreateAccountTapped = { [weak self] fullName, email, password in
+            guard let self = self else { return }
+            cell.startLoadingAnimation()
+            navigationItem.hidesBackButton = true
+            view.isUserInteractionEnabled = false
+            Task {
+                do {
+                    defer {
+                        cell.stopLoadingAnimation()
+                        self.navigationItem.hidesBackButton = false
+                        self.view.isUserInteractionEnabled = true
+                    }
+                    
+                    try await self.vm.signUp(email: email, password: password, fullName: fullName)
+                    self.showAlert(title: "Success", message: "You have successfully signed up!")
+                } catch {
+                    self.showAlert(title: "Error", message: error.localizedDescription)
+                }
+            }
+        }
+        return cell
+    }
+    
+    
 }
