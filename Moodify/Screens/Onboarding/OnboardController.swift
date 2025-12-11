@@ -66,8 +66,6 @@ class OnboardController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        
-        setupView()
         configure()
     }
     

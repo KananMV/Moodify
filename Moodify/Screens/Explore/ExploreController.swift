@@ -11,7 +11,6 @@ class ExploreController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupView()
     }
     
     override func setupView() {

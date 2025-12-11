@@ -75,7 +75,6 @@ class ScanResultController: BaseViewController, UIGestureRecognizerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -97,7 +96,6 @@ class ScanResultController: BaseViewController, UIGestureRecognizerDelegate {
         let emotion = viewModel.emotion.split(separator: " ").first.map(String.init) ?? viewModel.emotion
 
         moodDescription.text = "Your mood has been detected as \(emotion). Enjoy a curated playlist to match your vibe."
-        setupConstraints()
     }
     
     override func setupConstraints() {

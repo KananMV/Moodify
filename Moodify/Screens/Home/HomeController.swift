@@ -60,8 +60,6 @@ class HomeController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupView()
-        configureViewModel()
     }
     
     override func setupView() {
@@ -70,8 +68,6 @@ class HomeController: BaseViewController {
         view.addSubview(topLabel)
         view.addSubview(moodButton)
         view.addSubview(collectionView)
-        
-        setupConstraints()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -125,22 +121,11 @@ class HomeController: BaseViewController {
                 }
             }
         case .restricted, .denied:
-            let alert = UIAlertController(
-                title: "Camera Permission Disabled",
-                message: "To continue, please allow camera access in Settings.",
-                preferredStyle: .alert
-            )
-            
-            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-            
-            alert.addAction(UIAlertAction(title: "Open Settings", style: .default, handler: { _ in
+            showActionAlert(title: "Camera Permission Disabled", message: "To continue, please allow camera access in Settings.", okTitle: "Open Settings", cancelTitle: "Cancel",onOk: {
                 if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(settingsURL)
                 }
-            }))
-            
-            self.present(alert, animated: true)
-            
+            }, onCancel: {})
         case .authorized:
             presentImagePicker()
         default :

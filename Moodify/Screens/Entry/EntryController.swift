@@ -8,6 +8,7 @@
 import UIKit
 
 class EntryController: BaseViewController {
+
     
     private let topLabel: UILabel = {
         let label = UILabel()
@@ -81,8 +82,6 @@ class EntryController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupView()
-        
     }
     
     override func setupView() {
@@ -92,8 +91,6 @@ class EntryController: BaseViewController {
         view.addSubview(descriptionLabel)
         view.addSubview(stackView)
         view.addSubview(privacyAndPolicyLabel)
-        
-        setupConstraints()
     }
     
     override func setupConstraints() {

@@ -123,11 +123,10 @@ class LoginController: BaseViewController {
         return view
     }()
     
-    let vm = LoginViewModel()
+    let vm = LoginViewModel(authService: FirebaseAuthAdapter())
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupView()
     }
     
     override func setupView() {
@@ -135,7 +134,6 @@ class LoginController: BaseViewController {
         let items = [topLabel, stackView, loginButton, signUpButton, animationView]
         items.forEach { view.addSubview($0) }
         passwordTextField.delegate = self
-        setupConstraints()
     }
     
     override func setupConstraints() {

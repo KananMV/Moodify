@@ -22,18 +22,15 @@ class SignupController: BaseViewController {
         return tableView
     }()
     
-    private let vm = SignupViewModel()
+    private let vm = SignupViewModel(auth: FirebaseAuthAdapter(), userDB: FirestoreAdapter())
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        setupView()
     }
     
     override func setupView() {
         view.backgroundColor = UIColor(named: "controllerBackColor")
         view.addSubview(tableView)
-        setupConstraints()
     }
     
     override func setupConstraints() {
@@ -70,7 +67,7 @@ extension SignupController: UITableViewDelegate, UITableViewDataSource {
                         self.view.isUserInteractionEnabled = true
                     }
                     
-                    try await self.vm.signUp(email: email, password: password, fullName: fullName)
+                    try await self.vm.register(fullName: fullName, email: email, password: password)
                     self.showAlert(title: "Success", message: "You have successfully signed up!")
                 } catch {
                     self.showAlert(title: "Error", message: error.localizedDescription)

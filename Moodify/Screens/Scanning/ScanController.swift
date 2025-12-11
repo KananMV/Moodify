@@ -47,7 +47,6 @@ class ScanController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupView()
     }
     
     override func setupView() {
@@ -55,9 +54,6 @@ class ScanController: BaseViewController {
         view.addSubview(topLabel)
         view.addSubview(image)
         image.image = pickedImage
-        
-        
-        setupConstraints()
     }
     
     private func showScanAnimation() {

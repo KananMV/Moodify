@@ -6,6 +6,7 @@ final class HomeViewModel {
     
     private let emotionAnalyzer: EmotionAnalyzer
     
+    
     init(emotionAnalyzer: EmotionAnalyzer) {
         self.emotionAnalyzer = emotionAnalyzer
     }
