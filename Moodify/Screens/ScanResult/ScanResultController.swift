@@ -57,6 +57,7 @@ class ScanResultController: BaseViewController, UIGestureRecognizerDelegate {
         button.backgroundColor = UIColor(named: "buttonColor")
         button.heightAnchor.constraint(equalToConstant: 48).isActive = true
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(findTapped), for: .touchUpInside)
         return button
     }()
     
@@ -73,16 +74,14 @@ class ScanResultController: BaseViewController, UIGestureRecognizerDelegate {
     }
     
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
     }
     
+    
     override func setupView() {
+        navigationItem.backButtonTitle = "Back"
         view.backgroundColor = .controllerBack
         title = "Mood scan"
         view.addSubview(topLabel)
@@ -124,6 +123,11 @@ class ScanResultController: BaseViewController, UIGestureRecognizerDelegate {
             findPlaylist.leadingAnchor.constraint(equalTo: topLabel.leadingAnchor),
             findPlaylist.trailingAnchor.constraint(equalTo: topLabel.trailingAnchor)
         ])
+    }
+    
+    @objc func findTapped() {
+        let cordinator = PlaylistTabsCoordinator(navigation: self.navigationController ?? UINavigationController(), mood: viewModel.emotion)
+        cordinator.start()
     }
 
 }

@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6E3834B72EEC38DF00B4C033 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 6E3834B62EEC38DF00B4C033 /* Alamofire */; };
 		6E5BE39B2EE5ACBA00825902 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 6E5BE39A2EE5ACBA00825902 /* FirebaseAuth */; };
 		6E5BE39D2EE5ACBA00825902 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 6E5BE39C2EE5ACBA00825902 /* FirebaseCore */; };
 		6E5BE39F2EE5ACBA00825902 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 6E5BE39E2EE5ACBA00825902 /* FirebaseFirestore */; };
 		6E5BE3A12EE5ACBA00825902 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 6E5BE3A02EE5ACBA00825902 /* FirebaseStorage */; };
+		6E8B00F02EF3F93B00AE94EF /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 6E8B00EF2EF3F93B00AE94EF /* Kingfisher */; };
 		6E9F70B42ED8470D0032759A /* AWSAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 6E9F70B32ED8470D0032759A /* AWSAuthCore */; };
 		6E9F70B62ED8470D0032759A /* AWSRekognition in Frameworks */ = {isa = PBXBuildFile; productRef = 6E9F70B52ED8470D0032759A /* AWSRekognition */; };
 		6EE26DF72EE4353000733896 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 6EE26DF62EE4353000733896 /* Lottie */; };
@@ -47,7 +49,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				6E9F70B62ED8470D0032759A /* AWSRekognition in Frameworks */,
+				6E3834B72EEC38DF00B4C033 /* Alamofire in Frameworks */,
 				6E5BE39D2EE5ACBA00825902 /* FirebaseCore in Frameworks */,
+				6E8B00F02EF3F93B00AE94EF /* Kingfisher in Frameworks */,
 				6E9F70B42ED8470D0032759A /* AWSAuthCore in Frameworks */,
 				6EE26DF72EE4353000733896 /* Lottie in Frameworks */,
 				6E5BE3A12EE5ACBA00825902 /* FirebaseStorage in Frameworks */,
@@ -102,6 +106,8 @@
 				6E5BE39C2EE5ACBA00825902 /* FirebaseCore */,
 				6E5BE39E2EE5ACBA00825902 /* FirebaseFirestore */,
 				6E5BE3A02EE5ACBA00825902 /* FirebaseStorage */,
+				6E3834B62EEC38DF00B4C033 /* Alamofire */,
+				6E8B00EF2EF3F93B00AE94EF /* Kingfisher */,
 			);
 			productName = Moodify;
 			productReference = 6E45CD6A2ED326B7000B6598 /* Moodify.app */;
@@ -135,6 +141,8 @@
 				6E9F70B22ED8470D0032759A /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */,
 				6EE26DF52EE4353000733896 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				6E5BE3992EE5ACBA00825902 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				6E3834B52EEC38DF00B4C033 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				6E8B00EE2EF3F93B00AE94EF /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 6E45CD6B2ED326B7000B6598 /* Products */;
@@ -177,8 +185,10 @@
 				DEVELOPMENT_TEAM = 664J2QLJ79;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Moodify/Resources/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "To get a mood picture";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -204,8 +214,10 @@
 				DEVELOPMENT_TEAM = 664J2QLJ79;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Moodify/Resources/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "To get a mood picture";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -364,12 +376,28 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		6E3834B52EEC38DF00B4C033 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
 		6E5BE3992EE5ACBA00825902 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 12.6.0;
+			};
+		};
+		6E8B00EE2EF3F93B00AE94EF /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.6.2;
 			};
 		};
 		6E9F70B22ED8470D0032759A /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */ = {
@@ -391,6 +419,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		6E3834B62EEC38DF00B4C033 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E3834B52EEC38DF00B4C033 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
 		6E5BE39A2EE5ACBA00825902 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 6E5BE3992EE5ACBA00825902 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
@@ -410,6 +443,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6E5BE3992EE5ACBA00825902 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		6E8B00EF2EF3F93B00AE94EF /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E8B00EE2EF3F93B00AE94EF /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 		6E9F70B32ED8470D0032759A /* AWSAuthCore */ = {
 			isa = XCSwiftPackageProductDependency;

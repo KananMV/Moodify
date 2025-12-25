@@ -58,11 +58,8 @@ class HomeController: BaseViewController {
     
     private var selectedIndex: IndexPath?
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
     override func setupView() {
+        navigationItem.backButtonTitle = "Back"
         view.backgroundColor = UIColor(named: "controllerBackColor")
         title = "Moodify"
         view.addSubview(topLabel)
@@ -95,6 +92,14 @@ class HomeController: BaseViewController {
     }
     
     @objc private func buttonTapped() {
+        if let index = selectedIndex {
+            let selectedMood = moods[index.item]
+            
+            let cordinator = PlaylistTabsCoordinator(navigation: self.navigationController ?? UINavigationController(), mood: selectedMood.rawValue)
+            cordinator.start()
+            return
+        }
+        
         checkCameraPermission()
     }
     
