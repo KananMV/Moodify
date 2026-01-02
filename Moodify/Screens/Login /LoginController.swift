@@ -195,6 +195,7 @@ class LoginController: BaseViewController {
                 try await vm.login(email: email, password: password)
                 showAlert(title: "Success", message: "You are loged in") {
                     UIApplication.sceneDelegate?.changeRootToHome()
+                    UserDefaultsManager.shared.saveDataString(value: email, key: .email)
                     UserDefaultsManager.shared.saveDataBool(value: true, key: .isLogedIn)
                 }
                 

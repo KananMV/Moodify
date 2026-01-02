@@ -47,7 +47,7 @@ final class MusicPlaylistController: BaseViewController {
         }
 
         vm.error = { [weak self] error in
-            self?.hideLoader()
+//            self?.hideLoader()
             self?.showAlert(title: "Error", message: error)
         }
 

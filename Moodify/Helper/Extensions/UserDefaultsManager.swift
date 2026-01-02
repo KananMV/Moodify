@@ -10,6 +10,7 @@ enum UserDefaultsType: String, CaseIterable {
     case isLogedIn
     case isFirstTimeLaunch
     case email
+    case uid
 }
 
 class UserDefaultsManager {
@@ -40,6 +41,10 @@ class UserDefaultsManager {
         default:
             return UserDefaults.standard.bool(forKey: key.rawValue)
         }
+    }
+    
+    func removeData(key: UserDefaultsType) {
+        UserDefaults.standard.removeObject(forKey: key.rawValue)
     }
     
     func removeAllData() {

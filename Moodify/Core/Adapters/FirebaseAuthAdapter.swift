@@ -25,7 +25,11 @@ final class FirebaseAuthAdapter: AuthService {
     
     func signIn(email: String, password: String) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            Auth.auth().signIn(withEmail: email, password: password) { _, error in
+            Auth.auth().signIn(withEmail: email, password: password) { result, error in
+                
+                if let uid = result?.user.uid {
+                    UserDefaultsManager.shared.saveDataString(value: uid, key: .uid)
+                }
                 
                 if let error = error {
                     continuation.resume(throwing: error)
@@ -35,5 +39,9 @@ final class FirebaseAuthAdapter: AuthService {
                 continuation.resume(returning: ())
             }
         }
+    }
+    
+    func logout() async throws {
+        try Auth.auth().signOut()
     }
 }

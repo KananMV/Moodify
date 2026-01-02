@@ -17,7 +17,7 @@ final class MusicPlaylistViewModel {
     
     var items = [MusicPlaylist]()
     
-    init(playlistManager: MusicPlaylistUseCase,musicURLManager: MusicUseCase,mood: String) {
+    init(playlistManager: MusicPlaylistUseCase, musicURLManager: MusicUseCase, mood: String) {
         self.playlistManager = playlistManager
         self.musicURLManager = musicURLManager
         self.moodText = mood

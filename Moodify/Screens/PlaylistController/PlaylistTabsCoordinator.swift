@@ -30,9 +30,7 @@ class PlaylistTabsCoordinator: Cordinator {
         )
 
         let containerVC = PlaylistController(musicVC: musicVC, podcastVC: podcastVC)
-        
-        
+        containerVC.hidesBottomBarWhenPushed = true
         navigation.pushViewController(containerVC, animated: true)
-        
     }
 }

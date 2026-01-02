@@ -7,7 +7,7 @@
 
 import Foundation
 
-class MusicPlaylist: Codable, PlaylistCollectionCellProtocol{
+struct MusicPlaylist: Codable, PlaylistCollectionCellProtocol{
     var coverImageURL: String {
         posterUrl ?? ""
     }

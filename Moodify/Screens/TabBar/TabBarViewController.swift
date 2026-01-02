@@ -35,7 +35,7 @@ class TabBarViewController: UITabBarController {
         let exploreNav = UINavigationController(rootViewController: exploreVC)
         exploreNav.tabBarItem = UITabBarItem(title: "Explore", image: UIImage(systemName: "magnifyingglass"), selectedImage: UIImage(systemName: "magnifyingglass"))
         
-        let profileVC = ProfileController()
+        let profileVC = ProfileController(vm: .init(authService: FirebaseAuthAdapter(), firestoreService: FirestoreAdapter()))
         let profileNav = UINavigationController(rootViewController: profileVC)
         profileNav.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person.fill"))
         

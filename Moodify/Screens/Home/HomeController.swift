@@ -95,7 +95,8 @@ class HomeController: BaseViewController {
         if let index = selectedIndex {
             let selectedMood = moods[index.item]
             
-            let cordinator = PlaylistTabsCoordinator(navigation: self.navigationController ?? UINavigationController(), mood: selectedMood.rawValue)
+            let cordinator = PlaylistTabsCoordinator(navigation: self.navigationController ?? UINavigationController(),
+                                                     mood: selectedMood.rawValue)
             cordinator.start()
             return
         }
@@ -187,7 +188,7 @@ extension HomeController: UICollectionViewDelegateFlowLayout, UICollectionViewDa
         if selectedIndex == indexPath {
             selectedIndex = nil
             updateButtonText("Scan Mood")
-        }else {
+        } else {
             selectedIndex = indexPath
             let selectedEmotion = moods[indexPath.item]
             updateButtonText("Search playlist for \(selectedEmotion.rawValue) mood")

@@ -23,5 +23,4 @@ class ScanCordinator: Cordinator {
         navigation.show(vc, sender: nil)
     }
     
-    
 }

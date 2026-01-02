@@ -25,7 +25,6 @@ class PodcastPlaylistController: BaseViewController {
         return view
     }()
     
-    
 
     override func setupView() {
         view.backgroundColor = .controllerBack
