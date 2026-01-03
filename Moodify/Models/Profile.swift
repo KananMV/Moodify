@@ -6,13 +6,14 @@
 //
 
 import Foundation
-struct Profile: ProfileImageNameLabelCellProtocol {
-    var fullNameText: String {
+
+struct Profile: ImageLabelProtocol {
+    var titlText: String {
         fullName ?? ""
     }
     
-    var imageURLString: String? {
-        imageString
+    var imageName: String {
+        imageString ?? ""
     }
     
     let fullName: String?

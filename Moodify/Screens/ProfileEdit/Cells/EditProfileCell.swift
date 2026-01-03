@@ -190,14 +190,15 @@ class EditProfileCell: UITableViewCell {
         stackTappedHandler?()
     }
     
-    func configure(name: String, profileImageData: Data? = nil) {
+    func configure(name: String, profileImageUrl: String? = nil, profileImageData: UIImage? = nil) {
         fullNameTextField.text = name
         
-        if let data = profileImageData {
-            print(data)
-            profileImage.image = UIImage(data: data)
+        if let urlString = profileImageUrl {
+            profileImage.loadImage(path: urlString)
+        } else if let image = profileImageData {
+            profileImage.loadImage(imageData: image)
+        } else {
+            profileImage.loadImage(imageData: UIImage(systemName: "person.fill"))
         }
-        
-        
     }
 }

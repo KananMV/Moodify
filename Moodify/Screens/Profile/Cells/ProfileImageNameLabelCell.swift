@@ -6,12 +6,12 @@
 //
 
 import UIKit
-import Kingfisher
 
 protocol ProfileImageNameLabelCellProtocol {
     var fullNameText: String { get }
     var imageURLString: String? { get }
 }
+
 class ProfileImageNameLabelCell: UITableViewCell {
     
     private let profileImage: UIImageView = {
@@ -43,7 +43,7 @@ class ProfileImageNameLabelCell: UITableViewCell {
         return label
     }()
     
-    var imageDataCallback: ((Data?) -> Void)?
+//    var imageDataCallback: ((Data?) -> Void)?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -88,24 +88,13 @@ class ProfileImageNameLabelCell: UITableViewCell {
         NSLayoutConstraint.activate(constraints)
     }
     
-    func configure(data: ProfileImageNameLabelCellProtocol) {
-        fullNameLabel.text = data.fullNameText
+    func configure(data: ImageLabelProtocol) {
+        fullNameLabel.text = data.titlText
         
-        if let urlString = data.imageURLString, let url = URL(string: urlString) {
-            profileImage.kf.setImage(with: url) { [weak self] result in
-                switch result {
-                case .success(let value):
-                    let imageData = value.image.jpegData(compressionQuality: 0.7)
-                    self?.imageDataCallback?(imageData)
-                case .failure(_):
-                    self?.imageDataCallback?(nil)
-                }
-            }
-        } else {
-            profileImage.image = UIImage(systemName: "person.fill")
-            imageDataCallback?(nil)
-        }
+//        if let urlString = data.imageName {
+            profileImage.loadImage(path: data.imageName)
+//        } else {
+//            profileImage.image = UIImage(systemName: "person.fill")
+//        }
     }
-    
-    
 }

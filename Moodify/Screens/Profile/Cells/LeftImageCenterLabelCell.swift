@@ -7,10 +7,6 @@
 
 import UIKit
 
-protocol LeftImageCenterLabelCellDelegate {
-    var image: String { get }
-    var labelText: String { get }
-}
 class LeftImageCenterLabelCell: UITableViewCell {
     
     private lazy var containerView: UIView = {
@@ -109,9 +105,9 @@ class LeftImageCenterLabelCell: UITableViewCell {
         NSLayoutConstraint.activate(constraints)
     }
     
-    func configure(data: LeftImageCenterLabelCellDelegate) {
-        leftImage.image = UIImage(systemName: data.image)
-        label.text = data.labelText
+    func configure(data: ImageLabelProtocol) {
+        leftImage.image = UIImage(systemName: data.imageName)
+        label.text = data.titlText
     }
     
     

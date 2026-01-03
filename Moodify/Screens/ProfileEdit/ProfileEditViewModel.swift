@@ -9,11 +9,11 @@ import Foundation
 
 final class ProfileEditViewModel {
     let fullName: String
-    var profileImage: Data
+    var profileImage: String
     let userFireStoreService: UserFirestoreService
     let userFireStorageService: UserFireStorageService
     
-    init(fullName: String, userFireStoreService: UserFirestoreService, userFireStorageService: UserFireStorageService, profileImage: Data) {
+    init(fullName: String, userFireStoreService: UserFirestoreService, userFireStorageService: UserFireStorageService, profileImage: String) {
         self.fullName = fullName
         self.userFireStoreService = userFireStoreService
         self.userFireStorageService = userFireStorageService

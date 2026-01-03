@@ -38,6 +38,8 @@ class ProfileEditController: BaseViewController {
     }()
     
     let vm: ProfileEditViewModel
+    var profileImage: Data?
+    var selectedImage: UIImage?
     private var currentFullName: String
     
     init(vm: ProfileEditViewModel) {
@@ -120,10 +122,11 @@ class ProfileEditController: BaseViewController {
     }
     
     @objc private func saveTapped() {
+        guard let data = profileImage else { return }
         Task {
             do {
                 try await vm.updateFullName(currentFullName)
-                let downloadImageUrl = try await vm.uploadImageData(vm.profileImage)
+                let downloadImageUrl = try await vm.uploadImageData(data)
                 try await vm.updateProfileImageURL(downloadImageUrl)
                 showAlert(title: "Success", message: "Updated successfully") {
                     self.navigationController?.popViewController(animated: true)
@@ -144,7 +147,9 @@ extension ProfileEditController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "EditProfileCell") as? EditProfileCell else { return UITableViewCell() }
         cell.selectionStyle = .none
-        cell.configure(name: vm.fullName, profileImageData: vm.profileImage)
+        cell.configure(name: vm.fullName,
+                       profileImageUrl: selectedImage == nil ? vm.profileImage : nil,
+                       profileImageData: selectedImage)
         cell.onFullNameChanged = { [weak self] name in
             self?.currentFullName = name
         }
@@ -197,7 +202,8 @@ extension ProfileEditController: UIImagePickerControllerDelegate, UINavigationCo
         picker.dismiss(animated: true)
         guard let selectedImage = info[.originalImage] as? UIImage else { return }
         guard let data = selectedImage.jpegData(compressionQuality: 0.7) else { return }
-        vm.profileImage = data
+        profileImage = data
+        self.selectedImage = selectedImage
         tableView.reloadData()
     }
 }

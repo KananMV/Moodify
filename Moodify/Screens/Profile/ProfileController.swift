@@ -35,13 +35,6 @@ class ProfileController: BaseViewController {
         return button
     }()
     
-    private let options = [
-        ProfileOptionsModel(icon: "person.fill", text: "Profile"),
-        ProfileOptionsModel(icon: "book.fill", text: "Terms of service"),
-        ProfileOptionsModel(icon: "checkmark.shield.fill", text: "Privacy")
-    ]
-
-    
     override func setupView() {
         view.backgroundColor = UIColor(named: "controllerBackColor")
         view.addSubview(tableView)
@@ -122,58 +115,37 @@ class ProfileController: BaseViewController {
 }
 
 extension ProfileController: UITableViewDelegate, UITableViewDataSource {
-    
-    enum Section: Int, CaseIterable {
-        case profile
-        case options
-    }
-    
     func numberOfSections(in tableView: UITableView) -> Int {
-        Section.allCases.count
+        vm.sections.count
     }
-    
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let section = Section(rawValue: section) else { return 0 }
         
-        switch section {
-        case .profile:
-            return 1
-        case .options:
-            return options.count
-        }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        vm.sections[section].items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let section = Section(rawValue: indexPath.section) else {
-            return UITableViewCell()
-        }
+        let section = vm.sections[indexPath.section]
         
-        switch section {
+        switch section.sectionType {
         case .profile:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileImageNameLabelCell", for: indexPath) as? ProfileImageNameLabelCell else { return UITableViewCell() }
             cell.selectionStyle = .none
-            cell.imageDataCallback = { [weak self] data in
-                guard let self else { return }
-                self.imageData = data
-            }
-            cell.configure(data: vm.profile ?? Profile(fullName: nil, imageString: nil))
+            cell.configure(data: section.items[indexPath.row])
+            
             return cell
         case .options:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "LeftImageCenterLabelCell", for: indexPath) as? LeftImageCenterLabelCell else { return UITableViewCell() }
-            cell.configure(data: options[indexPath.row])
+            cell.configure(data: section.items[indexPath.row])
             cell.selectionStyle = .none
             return cell
-         }
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let section = Section(rawValue: indexPath.section) else { return UITableView.automaticDimension }
-        
         let totalHeight = tableView.frame.height
         let profileHeight = totalHeight / 3
         
-        switch section {
+        switch vm.sections[indexPath.section].sectionType {
         case .profile:
             return profileHeight
         case .options:
@@ -182,14 +154,7 @@ extension ProfileController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        guard let section = Section(rawValue: section) else { return 0 }
-
-        switch section {
-        case .profile:
-            return 0
-        case .options:
-            return 12
-        }
+        vm.sections[section].footerHeight
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -199,26 +164,28 @@ extension ProfileController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let section = Section(rawValue: indexPath.section), section == .options else { return }
         
-        let option = options[indexPath.row].text
+        let itemType = vm.sections[indexPath.section].items[indexPath.row].type
         
-        switch option {
-        case "Profile":
-            let vc = ProfileEditController(vm: .init(fullName: vm.profile?.fullName ?? "", userFireStoreService: FirestoreAdapter(), userFireStorageService: FireStorageAdapter(), profileImage: imageData!))
+        switch itemType {
+        case .profile:
+            let vc = ProfileEditController(vm: .init(fullName: vm.profile?.fullName ?? "",
+                                                     userFireStoreService: FirestoreAdapter(),
+                                                     userFireStorageService: FireStorageAdapter(),
+                                                     profileImage: vm.profile?.imageString ?? ""))
             navigationController?.show(vc, sender: self)
-        case "Privacy":
+        case .privacyPolicy:
             openURL("https://kananmv.github.io/App-Policy-Terms/privacy-policy.html")
             
-        case "Terms of service":
+        case .termsOfService:
             openURL("https://kananmv.github.io/App-Policy-Terms/terms-conditions.html")
             
-        default:
+        case .none:
             break
         }
     }
     
-    private func openURL(_ urlString: String) {
+    func openURL(_ urlString: String) {
         guard let url = URL(string: urlString) else { return }
         let safariVC = SFSafariViewController(url: url)
         present(safariVC, animated: true)

@@ -6,15 +6,23 @@
 //
 
 import Foundation
-struct ProfileOptionsModel: LeftImageCenterLabelCellDelegate {
-    var image: String {
+
+enum ProfileOptionsModelType {
+    case profile
+    case termsOfService
+    case privacyPolicy
+}
+
+struct ProfileOptionsModel: ImageLabelProtocol {
+    var imageName: String {
         icon
     }
     
-    var labelText: String {
+    var titlText: String {
         text
     }
     
     let icon: String
     let text: String
+    let type: ProfileOptionsModelType?
 }
