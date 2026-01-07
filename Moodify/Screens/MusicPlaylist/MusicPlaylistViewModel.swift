@@ -14,6 +14,7 @@ final class MusicPlaylistViewModel {
     var musicURLManager: MusicUseCase
     var moodText: String
     var searchURL: String?
+    var playlistCoverImageURL: String?
     
     var items = [MusicPlaylist]()
     
@@ -30,14 +31,18 @@ final class MusicPlaylistViewModel {
         do {
             let data = try await playlistManager.getPlaylist(mood: moodText)
             Task { @MainActor in
-                items = data ?? []
+                items = data?.playlist ?? []
+                playlistCoverImageURL = data?.playlistCoverImage
                 success?()
             }
+        } catch is CancellationError {
+            return
         } catch {
-            Task { @MainActor in
+            if Task.isCancelled { return }
+            await MainActor.run {
                 self.error?(error.localizedDescription)
             }
-           
+            
         }
     }
     

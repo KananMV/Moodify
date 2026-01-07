@@ -83,7 +83,7 @@ final class PlaylistController: UIViewController {
 
     private func show(_ vc: UIViewController, animated: Bool) {
         guard currentVC !== vc else { return }
-
+        (currentVC as? CancellableController)?.cancelFetching()
         if vc.parent == nil {
             addChild(vc)
             vc.view.translatesAutoresizingMaskIntoConstraints = false
@@ -116,5 +116,7 @@ final class PlaylistController: UIViewController {
         } completion: { _ in
             old?.view.isHidden = true
         }
+        
+        (vc as? CancellableController)?.startFetchingPlaylist()
     }
 }

@@ -10,7 +10,7 @@ import Foundation
 class MusicPlaylistManager: MusicPlaylistUseCase {
     let manager = NetworkManager()
     
-    func getPlaylist(mood: String) async throws -> [MusicPlaylist]? {
+    func getPlaylist(mood: String) async throws -> CoreModel<[MusicPlaylist]>? {
         try await manager.request(url: MusicPlaylistEndpoint.playlists(mood: mood).path, method: .get)
     }
 }

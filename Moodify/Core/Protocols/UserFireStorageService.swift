@@ -9,4 +9,5 @@ import Foundation
 
 protocol UserFireStorageService {
     func uploadImage(imageData: Data) async throws -> String
+    func deleteImage(downloadURL: String) async throws
 }

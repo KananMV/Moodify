@@ -2,10 +2,31 @@ import UIKit
 import Lottie
 import SafariServices
 
-final class MusicPlaylistController: BaseViewController {
+protocol CancellableController: AnyObject {
+    func cancelFetching()
+    func startFetchingPlaylist()
+}
+
+final class MusicPlaylistController: BaseViewController, CancellableController {
+    func cancelFetching() {
+        currentTask?.cancel()
+        currentTask = nil
+        hideLoader()
+    }
+    
+    func startFetchingPlaylist() {
+        if !vm.items.isEmpty { return }
+        currentTask?.cancel()
+        currentTask = Task { @MainActor in
+            showLoader()
+            defer { hideLoader() }
+            await vm.getPlaylist()
+        }
+    }
+    
 
     private var animationView: LottieAnimationView?
-    private var loaderOverlay: UIView?
+    private var currentTask: Task<Void, Never>?
 
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -20,6 +41,7 @@ final class MusicPlaylistController: BaseViewController {
         view.showsVerticalScrollIndicator = false
         view.translatesAutoresizingMaskIntoConstraints = false
         view.register(PlaylistCollectionCell.self, forCellWithReuseIdentifier: "PlaylistCollectionCell")
+        view.register(PlaylistCoverHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "PlaylistCoverHeader")
         return view
     }()
 
@@ -47,14 +69,13 @@ final class MusicPlaylistController: BaseViewController {
         }
 
         vm.error = { [weak self] error in
-//            self?.hideLoader()
             self?.showAlert(title: "Error", message: error)
         }
 
         Task { @MainActor in
             showLoader()
             defer { hideLoader() }
-            await vm.getPlaylist()
+            startFetchingPlaylist()
         }
     }
 
@@ -68,46 +89,21 @@ final class MusicPlaylistController: BaseViewController {
     }
     
     private func showLoader() {
-        guard loaderOverlay == nil else { return }
-
-        let hostView: UIView
-        if let window = view.window {
-            hostView = window
-        } else if let navView = navigationController?.view {
-            hostView = navView
-        } else {
-            hostView = view
-        }
-
-        let overlay = UIView()
-        overlay.translatesAutoresizingMaskIntoConstraints = false
-        overlay.backgroundColor = UIColor.black.withAlphaComponent(0.18)
-        overlay.isUserInteractionEnabled = true
-
-        let animation = LottieAnimationView(name: "Sparkles Loop Loader ai")
-        animation.translatesAutoresizingMaskIntoConstraints = false
-        animation.contentMode = .scaleAspectFill
-        animation.loopMode = .loop
-
-        overlay.addSubview(animation)
-        hostView.addSubview(overlay)
-
-        NSLayoutConstraint.activate([
-            overlay.topAnchor.constraint(equalTo: hostView.topAnchor),
-            overlay.leadingAnchor.constraint(equalTo: hostView.leadingAnchor),
-            overlay.trailingAnchor.constraint(equalTo: hostView.trailingAnchor),
-            overlay.bottomAnchor.constraint(equalTo: hostView.bottomAnchor),
-
-            animation.centerXAnchor.constraint(equalTo: overlay.centerXAnchor),
-            animation.centerYAnchor.constraint(equalTo: overlay.centerYAnchor),
-            animation.widthAnchor.constraint(equalToConstant: 200),
-            animation.heightAnchor.constraint(equalToConstant: 200)
-        ])
-
-        animation.play()
+        let width = view.frame.width * 0.5
+        let height = width
+        let x = (view.frame.width - width) / 2
+        let y = (view.frame.height - height - 150) / 2
         
-        loaderOverlay = overlay
-        animationView = animation
+        let animationView = LottieAnimationView(name: "Sparkles Loop Loader ai")
+        animationView.frame = CGRect(x: x, y: y, width: width, height: height)
+        animationView.backgroundColor = .clear
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.play()
+        view.isUserInteractionEnabled = false
+
+        view.addSubview(animationView)
+        self.animationView = animationView
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -116,14 +112,12 @@ final class MusicPlaylistController: BaseViewController {
             self.hideLoader()
         }
     }
-
+    
     private func hideLoader() {
         animationView?.stop()
         animationView?.removeFromSuperview()
+        view.isUserInteractionEnabled = true
         animationView = nil
-
-        loaderOverlay?.removeFromSuperview()
-        loaderOverlay = nil
     }
 }
 
@@ -167,6 +161,31 @@ extension MusicPlaylistController: UICollectionViewDelegateFlowLayout, UICollect
             safari.preferredControlTintColor = .white
             present(safari, animated: true)
         }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        viewForSupplementaryElementOfKind kind: String,
+                        at indexPath: IndexPath) -> UICollectionReusableView {
+        
+        if kind == UICollectionView.elementKindSectionHeader {
+            let header = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: "PlaylistCoverHeader",
+                for: indexPath
+            ) as! PlaylistCoverHeader
+            
+            if let cover = vm.playlistCoverImageURL {
+                header.configure(with: cover)
+            }
+            return header
+        }
+        return UICollectionReusableView()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: collectionView.frame.width * 0.6 + 32)
     }
     
 }

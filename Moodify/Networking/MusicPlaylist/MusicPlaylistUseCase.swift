@@ -7,5 +7,5 @@
 
 import Foundation
 protocol MusicPlaylistUseCase {
-    func getPlaylist(mood: String) async throws -> [MusicPlaylist]?
+    func getPlaylist(mood: String) async throws -> CoreModel<[MusicPlaylist]>?
 }

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 class PodcastPlaylistController: BaseViewController {
     
@@ -14,7 +15,7 @@ class PodcastPlaylistController: BaseViewController {
         layout.scrollDirection = .vertical
         layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         layout.minimumLineSpacing = 16
-
+        
         let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
         view.dataSource = self
         view.delegate = self
@@ -22,14 +23,15 @@ class PodcastPlaylistController: BaseViewController {
         view.showsVerticalScrollIndicator = false
         view.translatesAutoresizingMaskIntoConstraints = false
         view.register(PlaylistCollectionCell.self, forCellWithReuseIdentifier: "PlaylistCollectionCell")
+        view.register(PlaylistCoverHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "PlaylistCoverHeader")
         return view
     }()
     
-
+    
     override func setupView() {
         view.backgroundColor = .controllerBack
         view.addSubview(collectionView)
-         navigationController?.navigationBar.tintColor = .white
+        navigationController?.navigationBar.tintColor = .white
     }
     
     override func configureViewModel() {
@@ -37,12 +39,14 @@ class PodcastPlaylistController: BaseViewController {
         vm.success = { [weak self] in
             self?.collectionView.reloadData()
         }
-
+        
         vm.error = { [weak self] error in
             self?.showAlert(title: "Error", message: error)
         }
-
+        
         Task {
+            showLoader()
+            defer { hideLoader() }
             await vm.getPodcasts()
         }
         
@@ -59,8 +63,9 @@ class PodcastPlaylistController: BaseViewController {
     }
     
     let vm: PodcastViewModel
+    private var animationView: LottieAnimationView?
     
-
+    
     init(vm: PodcastViewModel) {
         self.vm = vm
         super.init(nibName: nil, bundle: nil)
@@ -68,6 +73,38 @@ class PodcastPlaylistController: BaseViewController {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func showLoader() {
+        let width = view.frame.width * 0.5
+        let height = width
+        let x = (view.frame.width - width) / 2
+        let y = (view.frame.height - height - 150) / 2
+        
+        let animationView = LottieAnimationView(name: "Sparkles Loop Loader ai")
+        animationView.frame = CGRect(x: x, y: y, width: width, height: height)
+        animationView.backgroundColor = .clear
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.play()
+        view.isUserInteractionEnabled = false
+        
+        view.addSubview(animationView)
+        self.animationView = animationView
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        Task { @MainActor in
+            self.hideLoader()
+        }
+    }
+    
+    private func hideLoader() {
+        animationView?.stop()
+        animationView?.removeFromSuperview()
+        view.isUserInteractionEnabled = true
+        animationView = nil
     }
     
 }
@@ -91,13 +128,38 @@ extension PodcastPlaylistController: UICollectionViewDataSource, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-            let urlString = vm.items[indexPath.item].trackViewUrl ?? ""
-            let trimmed = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard let url = URL(string: trimmed) else {
-                showAlert(title: "Error", message: "Podcast link is not correct")
-                return
-            }
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        let urlString = vm.items[indexPath.item].trackViewUrl ?? ""
+        let trimmed = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard let url = URL(string: trimmed) else {
+            showAlert(title: "Error", message: "Podcast link is not correct")
+            return
         }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        viewForSupplementaryElementOfKind kind: String,
+                        at indexPath: IndexPath) -> UICollectionReusableView {
+        
+        if kind == UICollectionView.elementKindSectionHeader {
+            let header = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: "PlaylistCoverHeader",
+                for: indexPath
+            ) as! PlaylistCoverHeader
+            
+            if let cover = vm.playlistCoverImageURL {
+                header.configure(with: cover)
+            }
+            return header
+        }
+        return UICollectionReusableView()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: collectionView.frame.width * 0.6 + 32)
+    }
 }

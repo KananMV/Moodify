@@ -90,11 +90,6 @@ class ProfileImageNameLabelCell: UITableViewCell {
     
     func configure(data: ImageLabelProtocol) {
         fullNameLabel.text = data.titlText
-        
-//        if let urlString = data.imageName {
-            profileImage.loadImage(path: data.imageName)
-//        } else {
-//            profileImage.image = UIImage(systemName: "person.fill")
-//        }
+        profileImage.loadImage(path: data.imageName)
     }
 }

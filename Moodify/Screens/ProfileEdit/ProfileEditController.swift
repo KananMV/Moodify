@@ -7,6 +7,7 @@
 
 import UIKit
 import AVFoundation
+import Lottie
 
 class ProfileEditController: BaseViewController {
     
@@ -40,7 +41,9 @@ class ProfileEditController: BaseViewController {
     let vm: ProfileEditViewModel
     var profileImage: Data?
     var selectedImage: UIImage?
+    private var isImageDeleted = false
     private var currentFullName: String
+    private var loaderAnimation: LottieAnimationView?
     
     init(vm: ProfileEditViewModel) {
         self.vm = vm
@@ -58,6 +61,10 @@ class ProfileEditController: BaseViewController {
         view.addSubview(tableView)
         tableView.contentInsetAdjustmentBehavior = .never
         tableView.tableFooterView = saveButton
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
     }
 
     
@@ -72,6 +79,32 @@ class ProfileEditController: BaseViewController {
         ]
         
         NSLayoutConstraint.activate(constraints)
+    }
+    
+    private func showLoader() {
+        
+        let width = view.frame.width * 0.5
+        let height = width
+        let x = (view.frame.width - width) / 2
+        let y = (view.frame.height - height) / 2
+        
+        let animationView = LottieAnimationView(name: "Loading")
+        animationView.frame = CGRect(x: x, y: y, width: width, height: height)
+        animationView.backgroundColor = .clear
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.play()
+        view.isUserInteractionEnabled = false
+
+        view.addSubview(animationView)
+        loaderAnimation = animationView
+    }
+
+    private func hideLoader() {
+        loaderAnimation?.stop()
+        loaderAnimation?.removeFromSuperview()
+        view.isUserInteractionEnabled = true
+        loaderAnimation = nil
     }
     
     
@@ -121,17 +154,36 @@ class ProfileEditController: BaseViewController {
         present(picker, animated: true)
     }
     
+    private func deleteImage() {
+        isImageDeleted = true
+        selectedImage = nil
+        profileImage = nil
+        
+        tableView.reloadData()
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
     @objc private func saveTapped() {
-        guard let data = profileImage else { return }
+        showLoader()
         Task {
             do {
                 try await vm.updateFullName(currentFullName)
-                let downloadImageUrl = try await vm.uploadImageData(data)
-                try await vm.updateProfileImageURL(downloadImageUrl)
-                showAlert(title: "Success", message: "Updated successfully") {
-                    self.navigationController?.popViewController(animated: true)
+
+                if isImageDeleted {
+                    try await vm.deleteProfileImage()
+                    try await vm.updateProfileImageURL("")
                 }
+                else if let data = profileImage {
+                    let downloadURL = try await vm.uploadImageData(data)
+                    try await vm.updateProfileImageURL(downloadURL)
+                }
+                hideLoader()
+                navigationController?.popViewController(animated: true)
             } catch {
+                hideLoader()
                 showAlert(title: "Error", message: error.localizedDescription)
             }
         }
@@ -147,9 +199,12 @@ extension ProfileEditController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "EditProfileCell") as? EditProfileCell else { return UITableViewCell() }
         cell.selectionStyle = .none
-        cell.configure(name: vm.fullName,
-                       profileImageUrl: selectedImage == nil ? vm.profileImage : nil,
-                       profileImageData: selectedImage)
+        cell.delegate = self
+        cell.configure(
+            name: vm.fullName,
+            profileImageUrl: (isImageDeleted ? nil : (selectedImage == nil ? vm.profileImage : nil)),
+            profileImageData: selectedImage
+        )
         cell.onFullNameChanged = { [weak self] name in
             self?.currentFullName = name
         }
@@ -168,6 +223,11 @@ extension ProfileEditController: UITableViewDelegate, UITableViewDataSource {
             alert.addAction(UIAlertAction(title: "Library", style: .default) { _ in
                 self.openLibrary()
             })
+            
+            alert.addAction(UIAlertAction(title: "Delete Photo", style: .destructive) { _ in
+                self.deleteImage()
+            })
+            
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
             if let popover = alert.popoverPresentationController {
                 popover.sourceView = self.view
@@ -207,3 +267,11 @@ extension ProfileEditController: UIImagePickerControllerDelegate, UINavigationCo
         tableView.reloadData()
     }
 }
+
+extension ProfileEditController: EditProfileCellDelegate {
+    func fullNameTextFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+}
+

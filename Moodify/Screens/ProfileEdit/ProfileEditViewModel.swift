@@ -32,5 +32,14 @@ final class ProfileEditViewModel {
         try await userFireStoreService.updateImageURL(url: profileImageURL)
     }
     
+    func deleteProfileImage() async throws {
+        guard !profileImage.isEmpty else { return }
+
+        try await userFireStorageService.deleteImage(downloadURL: profileImage)
+        try await userFireStoreService.updateImageURL(url: "")
+        profileImage = ""
+    }
+    
+    
     
 }

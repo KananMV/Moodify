@@ -91,7 +91,7 @@ class ProfileController: BaseViewController {
     }
     
     override func configureViewModel() {
-        Task {
+        Task { 
             do {
                 try await vm.getProfileData()
                 tableView.reloadData()

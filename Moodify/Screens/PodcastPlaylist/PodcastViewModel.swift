@@ -9,6 +9,7 @@ import Foundation
 final class PodcastViewModel {
     let podcastManager: PodcastManager
     var moodText: String
+    var playlistCoverImageURL: String?
     
     var items = [PodcastPlaylist]()
     
@@ -24,7 +25,8 @@ final class PodcastViewModel {
         do {
             let data = try await podcastManager.getPodcasts(mood: moodText)
             Task { @MainActor in
-                items = data ?? []
+                items = data?.playlist ?? []
+                playlistCoverImageURL = data?.playlistCoverImage
                 success?()
             }
         } catch {

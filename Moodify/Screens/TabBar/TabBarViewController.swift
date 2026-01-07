@@ -31,16 +31,16 @@ class TabBarViewController: UITabBarController {
         let homeNav = UINavigationController(rootViewController: homeVC)
         homeNav.tabBarItem = UITabBarItem(title: "Home", image: .homeUnselectedTabIcon, selectedImage: .homeSelectedTabIcon)
         
-        let exploreVC = ExploreController()
-        let exploreNav = UINavigationController(rootViewController: exploreVC)
-        exploreNav.tabBarItem = UITabBarItem(title: "Explore", image: UIImage(systemName: "magnifyingglass"), selectedImage: UIImage(systemName: "magnifyingglass"))
+        let libraryVC = LibraryController()
+        let libraryNav = UINavigationController(rootViewController: libraryVC)
+        libraryNav.tabBarItem = UITabBarItem(title: "Explore", image: UIImage(systemName: "magnifyingglass"), selectedImage: UIImage(systemName: "magnifyingglass"))
         
         let profileVC = ProfileController(vm: .init(authService: FirebaseAuthAdapter(), firestoreService: FirestoreAdapter()))
         let profileNav = UINavigationController(rootViewController: profileVC)
         profileNav.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person.fill"))
         
         
-        viewControllers = [homeNav, exploreNav, profileNav]
+        viewControllers = [homeNav, libraryNav, profileNav]
     }
 
 }

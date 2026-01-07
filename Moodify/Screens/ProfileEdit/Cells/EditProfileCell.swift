@@ -7,8 +7,13 @@
 
 import UIKit
 
+protocol EditProfileCellDelegate: AnyObject {
+    func fullNameTextFieldShouldReturn(_ textField: UITextField) -> Bool
+}
 
 class EditProfileCell: UITableViewCell {
+    
+    weak var delegate: EditProfileCellDelegate?
     
     private let profileImage: UIImageView = {
         let imageView = UIImageView()
@@ -70,6 +75,7 @@ class EditProfileCell: UITableViewCell {
         textField.layer.cornerRadius = 20
         textField.placeholder = "Enter your full name"
         textField.layer.masksToBounds = true
+        textField.delegate = self
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.addTarget(self, action: #selector(fullNameDidChange), for: .editingChanged)
         
@@ -193,12 +199,18 @@ class EditProfileCell: UITableViewCell {
     func configure(name: String, profileImageUrl: String? = nil, profileImageData: UIImage? = nil) {
         fullNameTextField.text = name
         
-        if let urlString = profileImageUrl {
-            profileImage.loadImage(path: urlString)
-        } else if let image = profileImageData {
+        if let image = profileImageData {
             profileImage.loadImage(imageData: image)
+        } else if let urlString = profileImageUrl, !urlString.isEmpty {
+            profileImage.loadImage(path: urlString)
         } else {
-            profileImage.loadImage(imageData: UIImage(systemName: "person.fill"))
+            profileImage.image = UIImage(systemName: "person.fill")
         }
+    }
+}
+
+extension EditProfileCell: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        return delegate?.fullNameTextFieldShouldReturn(textField) ?? true
     }
 }

@@ -7,5 +7,5 @@
 
 import Foundation
 protocol PodcastUseCase {
-    func getPodcasts(mood: String) async throws  -> [PodcastPlaylist]?
+    func getPodcasts(mood: String) async throws  -> CoreModel<[PodcastPlaylist]>?
 }
