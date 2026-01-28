@@ -38,7 +38,6 @@ class ProfileController: BaseViewController {
     override func setupView() {
         view.backgroundColor = UIColor(named: "controllerBackColor")
         view.addSubview(tableView)
-        title = "Profile"
         tableView.tableFooterView = logoutButton
     }
     

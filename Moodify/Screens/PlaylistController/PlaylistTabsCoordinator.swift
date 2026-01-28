@@ -18,15 +18,18 @@ class PlaylistTabsCoordinator: Cordinator {
 
     func start() {
         let musicVC = MusicPlaylistController(
-            vm: .init(playlistManager: MusicPlaylistManager(),
+            vm: .init(
+                playlistManager: MusicPlaylistManager(),
                       musicURLManager: MusicManager(),
-                      mood: mood)
+                      mood: mood,
+                      musicFavoritesService: FirestoreAdapter()
+                     )
         )
         
 
         let podcastVC = PodcastPlaylistController(
             vm: .init(podcastManager: PodcastManager(),
-                      moodText: mood)
+                      moodText: mood, podcastFavoritesService: FirestoreAdapter())
         )
 
         let containerVC = PlaylistController(musicVC: musicVC, podcastVC: podcastVC)

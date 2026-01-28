@@ -8,6 +8,10 @@
 import Foundation
 
 struct CoreModel <T: Codable>: Codable {
+    let playlistId: String?
     let playlistCoverImage: String?
     let playlist: T?
+    
+    let playlistMood: String?
+    let playlistName: String?
 }

@@ -7,8 +7,8 @@
 
 import Foundation
 
-
 struct MusicURL: Codable {
+    
     let musicUrl: String?
     let youtubeUrl: String?
 }

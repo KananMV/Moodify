@@ -20,6 +20,7 @@ class ScanCordinator: Cordinator {
     func start() {
         navigation.navigationBar.isHidden = true
         let vc = ScanController(vm: .init(pickedImage: pickedImage, emotionAnalyzer: AWSAdapter()))
+        vc.hidesBottomBarWhenPushed = true
         navigation.show(vc, sender: nil)
     }
     

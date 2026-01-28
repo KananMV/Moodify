@@ -79,6 +79,50 @@ final class MusicPlaylistController: BaseViewController, CancellableController {
         }
     }
 
+    private func showSavePlaylistAlert() {
+        let alert = UIAlertController(
+            title: "Playlist Name",
+            message: "Give a name to your playlist",
+            preferredStyle: .alert
+        )
+
+        alert.addTextField { tf in
+            tf.placeholder = "New Playlist"
+            tf.text = self.vm.playlistName
+        }
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        alert.addAction(UIAlertAction(title: "Save", style: .default) { _ in
+            guard let text = alert.textFields?.first?.text, !text.isEmpty else { return }
+            self.vm.playlistName = text
+            if let playlist = self.vm.currentPlaylist {
+                let playlistWithName = CoreModel(
+                    playlistId: playlist.playlistId,
+                    playlistCoverImage: playlist.playlistCoverImage,
+                    playlist: playlist.playlist,
+                    playlistMood: self.vm.moodText,
+                    playlistName: text
+                )
+                self.vm.currentPlaylist = playlistWithName
+                Task {
+                    do {
+                        try await self.vm.musicFavoritesService.addToFavorites(
+                            playlist: playlistWithName,
+                            collection: .musics
+                        )
+                        self.vm.isFavorite = true
+                        self.vm.success?()
+                    } catch {
+                        self.showAlert(title: "Error", message: error.localizedDescription)
+                    }
+                }
+            }
+        })
+
+        present(alert, animated: true)
+    }
+
     override func setupConstraints() {
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -124,7 +168,7 @@ final class MusicPlaylistController: BaseViewController, CancellableController {
 extension MusicPlaylistController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        vm.items.count
+        return vm.items.count
     }
 
     func collectionView(_ collectionView: UICollectionView,
@@ -175,17 +219,54 @@ extension MusicPlaylistController: UICollectionViewDelegateFlowLayout, UICollect
             ) as! PlaylistCoverHeader
             
             if let cover = vm.playlistCoverImageURL {
-                header.configure(with: cover)
+                header.configure(with: cover,mood: vm.moodText,titleLabelText: vm.currentPlaylist?.playlistName)
             }
+            header.setSaved(vm.isFavorite)
+            
+            header.buttonTapped = { [weak self] in
+                guard let self = self else { return }
+                if !self.vm.isFavorite {
+                    self.showSavePlaylistAlert()
+                } else {
+                    Task {
+                        guard let playlist = self.vm.currentPlaylist else { return }
+                        do {
+                            try await self.vm.musicFavoritesService.removeFromFavorites(
+                                playlist: playlist,
+                                collection: .musics
+                            )
+                            self.vm.isFavorite = false
+                            self.vm.success?()
+                        } catch {
+                            self.showAlert(title: "Error", message: error.localizedDescription)
+                        }
+                    }
+                }
+            }
+            
             return header
         }
         return UICollectionReusableView()
     }
     
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: collectionView.frame.width * 0.6 + 32)
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        referenceSizeForHeaderInSection section: Int
+    ) -> CGSize {
+
+        let width = collectionView.frame.width
+        let imageHeight = width * 0.6
+        let titleHeight: CGFloat = vm.currentPlaylist?.playlistName == nil ? 0 : 28
+        let stackHeight: CGFloat = 36
+        let spacing: CGFloat = 16 + 8 + 8
+
+        let totalHeight = imageHeight + titleHeight + stackHeight + spacing
+
+        return CGSize(width: width, height: totalHeight)
     }
     
 }
+
+
+
