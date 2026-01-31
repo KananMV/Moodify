@@ -46,15 +46,15 @@ Moodify is a mood-based music and podcast recommendation app that suggests perso
     <tr>
       <td align="center">
         <img src="screenshots/musicplaylist.png" width="180" /><br/>
-        UIKit, MVVM, OpenAI API, YouTube API
+          OpenAI API, YouTube API, Node.js backend, WebKit
       </td>
       <td align="center">
         <img src="screenshots/podcastplaylist.png" width="180" /><br/>
-        UIKit, MVVM, OpenAI API, iTunes API, Node.js backend
+         OpenAI API, iTunes API, Node.js backend, WebKit
       </td>
       <td align="center">
         <img src="screenshots/profileedit.png" width="180" /><br/>
-        UIKit, MVVM, Firebase (Firestore & Storage)
+           Firebase (Firestore & Storage), UserDefaults, UIImagePicker
       </td>
     </tr>
   </table>
@@ -66,4 +66,4 @@ Moodify is a mood-based music and podcast recommendation app that suggests perso
 
 1. Clone the repository:  
    ```bash
-   git clone https://github.com/username/Moodify.git
+   git clone https://github.com/KananMV/Moodify.git
