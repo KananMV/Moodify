@@ -45,16 +45,16 @@ Moodify is a mood-based music and podcast recommendation app that suggests perso
   <table>
     <tr>
       <td align="center">
-        <img src="screenshots/musicplaylist.png" width="180" /><br/>
-          OpenAI API, YouTube API, Node.js backend, WebKit
+        <img src="screenshots/home.png" width="180" /><br/>
+          AWS Rekognation(Scan Face for mood)
       </td>
       <td align="center">
-        <img src="screenshots/podcastplaylist.png" width="180" /><br/>
-         OpenAI API, iTunes API, Node.js backend, WebKit
+        <img src="screenshots/musicplaylist.png" width="180" /><br/>
+         OpenAI API, YouTube API, Node.js backend, WebKit
       </td>
       <td align="center">
         <img src="screenshots/profileedit.png" width="180" /><br/>
-           Firebase (Firestore & Storage), UserDefaults, UIImagePicker
+           Firebase (Firestore & Storage), UserDefaults
       </td>
     </tr>
   </table>
