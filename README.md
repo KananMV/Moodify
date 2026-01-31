@@ -12,6 +12,7 @@ Moodify is a mood-based music and podcast recommendation app that suggests perso
 - Authentication with login and signup options  
 - Profile view and edit options  
 - Real-time recommendations powered by AI
+- Mood detection using **AWS Rekognition** for facial analysis  
 
 ---
 
