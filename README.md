@@ -18,12 +18,13 @@ Moodify is a mood-based music and podcast recommendation app that suggests perso
 
 ## Tech Stack & Design Patterns
 
-- **Frontend:** UIKit, MVVM Architecture  
+- **Frontend:** UIKit, MVVM Architecture, Protocol-Oriented Programming (POP)
 - **Networking:** Alamofire  
 - **APIs:** OpenAI API, YouTube API, iTunes API  
 - **Backend:** Node.js  
 - **Database & Storage:** Firebase (Firestore & Storage)  
 - **Design Patterns:** Singleton, Coordinator, Adapter
+- **Local Storage:** UserDefaults for local settings and user preferences  
 
 ---
 
