@@ -6,9 +6,9 @@
 import UIKit
 
 class LibraryController: BaseViewController {
-
+    
     private let viewModel = LibraryViewModel(userFavoritesService: FirestoreAdapter())
-
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -22,7 +22,7 @@ class LibraryController: BaseViewController {
         view.register(LibraryCell.self, forCellWithReuseIdentifier: "PlaylistCell")
         return view
     }()
-
+    
     private lazy var dropdownButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Music ▾", for: .normal)
@@ -46,16 +46,16 @@ class LibraryController: BaseViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-
+    
     override func setupView() {
         view.backgroundColor = UIColor(named: "controllerBackColor")
         view.addSubview(dropdownButton)
         view.addSubview(collectionView)
         view.addSubview(emptyLabel)
-
+        
         setupDropdown()
     }
-
+    
     override func setupConstraints() {
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
@@ -71,7 +71,7 @@ class LibraryController: BaseViewController {
             
         ])
     }
-
+    
     private func setupDropdown() {
         dropdownButton.addTarget(self, action: #selector(dropdownTapped), for: .touchUpInside)
         dropdownButton.titleLabel?.font = .boldSystemFont(ofSize: 22)
@@ -81,20 +81,20 @@ class LibraryController: BaseViewController {
     
     private func updateEmptyState() {
         let isEmpty: Bool
-
+        
         switch viewModel.currentCollection {
         case .musics:
             isEmpty = viewModel.musicFavorites.isEmpty
         case .podcasts:
             isEmpty = viewModel.podcastFavorites.isEmpty
         }
-
+        
         emptyLabel.isHidden = !isEmpty
         collectionView.isHidden = isEmpty
     }
-
     
-
+    
+    
     @objc private func dropdownTapped() {
         let alert = UIAlertController(title: "Select Favorites", message: nil, preferredStyle: .actionSheet)
         
@@ -117,10 +117,11 @@ class LibraryController: BaseViewController {
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         present(alert, animated: true)
     }
-
+    
     private func fetchData() {
         viewModel.fetchFavorites {
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
                 self.collectionView.reloadData()
             }
         }
@@ -128,10 +129,12 @@ class LibraryController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        
         viewModel.fetchFavorites { [weak self] in
             DispatchQueue.main.async {
-                self?.collectionView.reloadData()
+                self?.collectionView.performBatchUpdates({
+                    self?.collectionView.reloadSections(IndexSet(integer: 0))
+                }, completion: nil)
                 self?.updateEmptyState()
             }
         }
@@ -139,7 +142,7 @@ class LibraryController: BaseViewController {
 }
 
 extension LibraryController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch viewModel.currentCollection {
         case .musics:
@@ -148,12 +151,12 @@ extension LibraryController: UICollectionViewDelegate, UICollectionViewDataSourc
             return viewModel.podcastFavorites.count
         }
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PlaylistCell", for: indexPath) as? LibraryCell else {
             return UICollectionViewCell()
         }
-
+        
         switch viewModel.currentCollection {
         case .musics:
             let playlist = viewModel.musicFavorites[indexPath.item]
@@ -162,10 +165,10 @@ extension LibraryController: UICollectionViewDelegate, UICollectionViewDataSourc
             let playlist = viewModel.podcastFavorites[indexPath.item]
             cell.configure(coverURL: playlist.playlistCoverImage ?? "",title: playlist.playlistName ?? "")
         }
-
+        
         return cell
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch viewModel.currentCollection {
         case .musics:
@@ -178,7 +181,7 @@ extension LibraryController: UICollectionViewDelegate, UICollectionViewDataSourc
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-
+    
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {

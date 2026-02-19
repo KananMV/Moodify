@@ -25,7 +25,7 @@ final class NetworkManager {
     func request <T: Codable> (url: String,
                                 method: HTTPMethod,
                                 parameters: Parameters? = nil,
-                                encoding: EncodingType = .url) async throws -> T? {
+                                encoding: EncodingType  = .url) async throws -> T? {
         return try await AF.request(url,method: method,parameters: parameters,encoding: encoding.encoding).serializingDecodable(T.self).value
     }
 }

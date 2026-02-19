@@ -20,7 +20,8 @@ extension UIImageView {
     }
     
     func loadImage(base64String: String) {
-            DispatchQueue.global(qos: .userInitiated).async {
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                guard let self = self else { return }
                 var imageData: Data?
 
                 if base64String.hasPrefix("data:image/") {

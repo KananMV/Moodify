@@ -57,6 +57,10 @@ final class MusicPlaylistController: BaseViewController, CancellableController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        currentTask?.cancel()
+    }
+    
     override func setupView() {
         view.backgroundColor = .controllerBack
         view.addSubview(collectionView)
@@ -93,8 +97,9 @@ final class MusicPlaylistController: BaseViewController, CancellableController {
 
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         
-        alert.addAction(UIAlertAction(title: "Save", style: .default) { _ in
+        alert.addAction(UIAlertAction(title: "Save", style: .default) { [weak self] _ in
             guard let text = alert.textFields?.first?.text, !text.isEmpty else { return }
+            guard let self = self else { return }
             self.vm.playlistName = text
             if let playlist = self.vm.currentPlaylist {
                 let playlistWithName = CoreModel(
@@ -152,6 +157,7 @@ final class MusicPlaylistController: BaseViewController, CancellableController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        cancelFetching()
         Task { @MainActor in
             self.hideLoader()
         }

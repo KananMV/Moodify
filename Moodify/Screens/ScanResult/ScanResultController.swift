@@ -126,8 +126,16 @@ class ScanResultController: BaseViewController, UIGestureRecognizerDelegate {
     }
     
     @objc func findTapped() {
-        let cordinator = PlaylistTabsCoordinator(navigation: self.navigationController ?? UINavigationController(), mood: viewModel.emotion)
-        cordinator.start()
+        let firstWord = viewModel.emotion
+                .split(separator: " ")
+                .first
+                .map(String.init) ?? viewModel.emotion
+
+            let coordinator = PlaylistTabsCoordinator(
+                navigation: self.navigationController ?? UINavigationController(),
+                mood: firstWord
+            )
+            coordinator.start()
     }
 
 }

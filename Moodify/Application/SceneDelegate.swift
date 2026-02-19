@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)        
         setupInitialRoot()
-        
+        NetworkMonitor.shared.start()
         window?.makeKeyAndVisible()
         
     }
@@ -41,11 +41,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
     
-    @objc func changeRootToEntryFromOnboard() {
+    func changeRootToEntryFromOnboard() {
         guard let window = window else { return }
-        UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: {
-            window.rootViewController = UINavigationController(rootViewController: EntryController())
-        })
+        if let tabBar = window.rootViewController as? UITabBarController {
+            tabBar.viewControllers = []
+        }
+        let entryVC = EntryController()
+        window.rootViewController = UINavigationController(rootViewController: entryVC)
+        window.makeKeyAndVisible()
     }
     
     @objc func changeRootToHome() {

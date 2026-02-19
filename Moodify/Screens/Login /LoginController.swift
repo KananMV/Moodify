@@ -174,9 +174,17 @@ class LoginController: BaseViewController {
     
     func stopLoadingAnimation() {
         animationView.stop()
+        animationView.removeFromSuperview()
         navigationItem.hidesBackButton = false
         view.isUserInteractionEnabled = true
         animationView.isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        emailTextField.delegate = nil
+        passwordTextField.delegate = nil
+        passwordTextField.rightView = nil
     }
     
     @objc private func loginTapped() {
@@ -186,13 +194,14 @@ class LoginController: BaseViewController {
             return }
         
         startLoadingAnimation()
-        Task {
+        Task { [weak self] in
+            guard let self else { return }
             do {
                 defer {
-                    stopLoadingAnimation()
+                    self.stopLoadingAnimation()
                 }
                 
-                try await vm.login(email: email, password: password)
+                try await self.vm.login(email: email, password: password)
                 showAlert(title: "Success", message: "You are loged in") {
                     UIApplication.sceneDelegate?.changeRootToHome()
                     UserDefaultsManager.shared.saveDataString(value: email, key: .email)

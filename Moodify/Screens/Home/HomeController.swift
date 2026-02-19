@@ -149,9 +149,9 @@ extension HomeController: UIImagePickerControllerDelegate, UINavigationControlle
         
         guard let data = fixedImage.jpegData(compressionQuality: 0.7) else { return }
         
-        let cordinator = ScanCordinator(navigation: self.navigationController ?? UINavigationController(), pickedImage: data)
-        
-        picker.dismiss(animated: true) {
+        picker.dismiss(animated: true) { [weak self] in
+            guard let self else { return }
+            let cordinator = ScanCordinator(navigation: self.navigationController ?? UINavigationController(), pickedImage: data)
             cordinator.start()
         }
     }
