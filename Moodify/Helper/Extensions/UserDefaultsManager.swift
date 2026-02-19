@@ -11,6 +11,7 @@ enum UserDefaultsType: String, CaseIterable {
     case isFirstTimeLaunch
     case email
     case uid
+    case isLoginWithGoogle
 }
 
 class UserDefaultsManager {

@@ -19,7 +19,7 @@ final class FireStorageAdapter: UserFireStorageService {
     }
 
     func uploadImage(imageData: Data) async throws -> String {
-        guard let uid = UserDefaultsManager.shared.getDataString(key: .uid) else { return ""}
+        guard let uid = SessionManager.uid, !uid.isEmpty else { return "" }
         
         let ref = storage.reference()
                     .child("profile_images")

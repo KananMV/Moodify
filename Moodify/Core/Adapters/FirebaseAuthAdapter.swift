@@ -1,8 +1,28 @@
 
 
 import FirebaseAuth
+import Foundation
 
 final class FirebaseAuthAdapter: AuthService {
+    func signInWithGoogle(tokens: GoogleTokens) async throws -> String {
+        let credential = GoogleAuthProvider.credential(
+            withIDToken: tokens.idToken,
+            accessToken: tokens.accessToken
+        )
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            Auth.auth().signIn(with: credential) { result, error in
+                if let error { continuation.resume(throwing: error); return }
+                guard let uid = result?.user.uid else {
+                    continuation.resume(throwing: NSError(domain: "No UID", code: 0)); return
+                }
+                SessionManager.set(uid: uid)
+                continuation.resume(returning: uid)
+            }
+        }
+    }
+    
+    
     
     func signUp(email: String, password: String) async throws -> String {
         try await withCheckedThrowingContinuation { continuation in
@@ -28,7 +48,7 @@ final class FirebaseAuthAdapter: AuthService {
             Auth.auth().signIn(withEmail: email, password: password) { result, error in
                 
                 if let uid = result?.user.uid {
-                    UserDefaultsManager.shared.saveDataString(value: uid, key: .uid)
+                    SessionManager.set(uid: uid)
                 }
                 
                 if let error = error {

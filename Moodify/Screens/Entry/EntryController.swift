@@ -40,6 +40,7 @@ class EntryController: BaseViewController {
         button.layer.cornerRadius = 24
         button.backgroundColor = UIColor(named: "buttonColor")
         button.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        button.addTarget(self, action: #selector(googleButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -78,6 +79,8 @@ class EntryController: BaseViewController {
         return label
     }()
     
+    private let googleProvider: GoogleSignInProviding = GoogleSignInProvider()
+    private lazy var viewModel = EntryViewModel(authService: FirebaseAuthAdapter())
     
     
     override func viewDidLoad() {
@@ -115,6 +118,38 @@ class EntryController: BaseViewController {
         ]
         
         NSLayoutConstraint.activate(constraints)
+    }
+    
+    @objc private func googleButtonTapped() {
+        googleButton.isEnabled = false
+
+        Task { [weak self] in
+            guard let self else { return }
+            defer { self.googleButton.isEnabled = true }
+
+            do {
+                let result = try await viewModel.signInWithGoogle {
+                    try await self.googleProvider.signIn(presenting: self)
+                }
+
+                try await FirestoreAdapter().upsertUserProfile(
+                    uid: result.uid,
+                    fullName: result.info.fullName,
+                    email: result.info.email,
+                    imageURL: result.info.photoURL
+                )
+
+                await MainActor.run {
+                    UserDefaultsManager.shared.saveDataBool(value: true, key: .isLogedIn)
+                    UserDefaultsManager.shared.saveDataBool(value: true, key: .isLoginWithGoogle)
+                    UIApplication.sceneDelegate?.changeRootToHome()
+                }
+            } catch {
+                await MainActor.run {
+                    self.showAlert(title: "Error", message: error.localizedDescription)
+                }
+            }
+        }
     }
     
     @objc func emailButtonTapped() {

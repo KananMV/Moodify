@@ -10,7 +10,7 @@ final class FirestoreAdapter: UserFirestoreService, UserFavoritesService {
     ) async throws {
 
         guard
-            let uid = uid, !uid.isEmpty,
+            let uid = currentUID, !uid.isEmpty,
             let playlistId = playlist.playlistId, !playlistId.isEmpty
         else {
             throw NSError(domain: "InvalidData", code: 400)
@@ -29,7 +29,7 @@ final class FirestoreAdapter: UserFirestoreService, UserFavoritesService {
         collection: FavoritesCollection
     ) async throws -> Bool {
 
-        guard let uid = uid, !uid.isEmpty else {
+        guard let uid = currentUID, !uid.isEmpty else {
             throw NSError(domain: "AuthError", code: 401)
         }
 
@@ -44,7 +44,7 @@ final class FirestoreAdapter: UserFirestoreService, UserFavoritesService {
     }
     
     func fetchData<T: Codable>(collection: FavoritesCollection) async throws -> [CoreModel<[T]>] {
-        guard let uid = uid, !uid.isEmpty else {
+        guard let uid = currentUID, !uid.isEmpty else {
             throw NSError(domain: "AuthError", code: 401)
         }
         
@@ -65,7 +65,7 @@ final class FirestoreAdapter: UserFirestoreService, UserFavoritesService {
     }
     
     func addToFavorites<T: Codable>(playlist: CoreModel<[T]>, collection: FavoritesCollection) async throws {
-        guard let uid = uid, !uid.isEmpty else {
+        guard let uid = currentUID, !uid.isEmpty else {
             throw NSError(domain: "AuthError", code: 401)
         }
 
@@ -101,11 +101,11 @@ final class FirestoreAdapter: UserFirestoreService, UserFavoritesService {
     
     
     let db = Firestore.firestore()
-    let uid = UserDefaultsManager.shared.getDataString(key: .uid)
+    private var currentUID: String? { SessionManager.uid }
     
     func getProfileData() async throws -> Profile {
         
-        guard let uid = uid, !uid.isEmpty else {
+        guard let uid = currentUID, !uid.isEmpty else {
             throw NSError(domain: "AuthError", code: 401)
         }
         
@@ -115,7 +115,7 @@ final class FirestoreAdapter: UserFirestoreService, UserFavoritesService {
             .getDocument()
         
         guard let data = snapshot.data() else {
-            fatalError("Failed to get document data")
+            return Profile(fullName: "", imageString: "")
         }
         
         let fullName = data["fullName"] as? String ?? ""
@@ -127,7 +127,7 @@ final class FirestoreAdapter: UserFirestoreService, UserFavoritesService {
     
     func updateImageURL(url: String) async throws {
         
-        guard let uid = uid, !uid.isEmpty else {
+        guard let uid = currentUID, !uid.isEmpty else {
             throw NSError(domain: "AuthError", code: 401)
         }
         
@@ -159,7 +159,7 @@ final class FirestoreAdapter: UserFirestoreService, UserFavoritesService {
     }
     
     func getFullName() async throws -> String {
-        guard let uid = uid, !uid.isEmpty else {
+        guard let uid = currentUID, !uid.isEmpty else {
             throw NSError(domain: "AuthError", code: 401)
         }
         
@@ -176,9 +176,25 @@ final class FirestoreAdapter: UserFirestoreService, UserFavoritesService {
     
     func updateFullName(fullName: String) async throws  {
         
-        guard let uid = uid, !uid.isEmpty else {
+        guard let uid = currentUID, !uid.isEmpty else {
             throw NSError(domain: "AuthError", code: 401)
         }
         try await Firestore.firestore().collection("users").document(uid).updateData(["fullName": fullName])
+    }
+    
+    func upsertUserProfile(uid: String, fullName: String?, email: String?, imageURL: String?) async throws {
+        var data: [String: Any] = [:]
+
+        if let fullName, !fullName.isEmpty { data["fullName"] = fullName }
+        if let email, !email.isEmpty { data["email"] = email }
+        if let imageURL, !imageURL.isEmpty { data["imageURL"] = imageURL }
+
+        if data.isEmpty {
+            data["fullName"] = ""
+            data["imageURL"] = ""
+            data["email"] = ""
+        }
+
+        try await db.collection("users").document(uid).setData(data, merge: true)
     }
 }
