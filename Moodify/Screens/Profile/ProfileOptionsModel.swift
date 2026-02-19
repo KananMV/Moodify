@@ -25,4 +25,5 @@ struct ProfileOptionsModel: ImageLabelProtocol {
     let icon: String
     let text: String
     let type: ProfileOptionsModelType?
+    var isEnabled: Bool = true
 }

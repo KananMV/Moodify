@@ -168,6 +168,12 @@ extension ProfileController: UITableViewDelegate, UITableViewDataSource {
         
         switch itemType {
         case .profile:
+            
+            if UserDefaultsManager.shared.getBool(key: .isLoginWithGoogle) {
+                showAlert(title: "Info", message: "Profile editing is not available for Google login users")
+                return
+            }
+            
             let vc = ProfileEditController(vm: .init(fullName: vm.profile?.fullName ?? "",
                                                      userFireStoreService: FirestoreAdapter(),
                                                      userFireStorageService: FireStorageAdapter(),

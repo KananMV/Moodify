@@ -43,8 +43,6 @@ class ProfileImageNameLabelCell: UITableViewCell {
         return label
     }()
     
-//    var imageDataCallback: ((Data?) -> Void)?
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupView()

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6E3834B72EEC38DF00B4C033 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 6E3834B62EEC38DF00B4C033 /* Alamofire */; };
+		6E443E342F4707EC00BF15A7 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 6E443E332F4707EC00BF15A7 /* GoogleSignIn */; };
 		6E5BE39B2EE5ACBA00825902 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 6E5BE39A2EE5ACBA00825902 /* FirebaseAuth */; };
 		6E5BE39D2EE5ACBA00825902 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 6E5BE39C2EE5ACBA00825902 /* FirebaseCore */; };
 		6E5BE39F2EE5ACBA00825902 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 6E5BE39E2EE5ACBA00825902 /* FirebaseFirestore */; };
@@ -53,6 +54,7 @@
 				6E5BE39D2EE5ACBA00825902 /* FirebaseCore in Frameworks */,
 				6E8B00F02EF3F93B00AE94EF /* Kingfisher in Frameworks */,
 				6E9F70B42ED8470D0032759A /* AWSAuthCore in Frameworks */,
+				6E443E342F4707EC00BF15A7 /* GoogleSignIn in Frameworks */,
 				6EE26DF72EE4353000733896 /* Lottie in Frameworks */,
 				6E5BE3A12EE5ACBA00825902 /* FirebaseStorage in Frameworks */,
 				6E5BE39B2EE5ACBA00825902 /* FirebaseAuth in Frameworks */,
@@ -108,6 +110,7 @@
 				6E5BE3A02EE5ACBA00825902 /* FirebaseStorage */,
 				6E3834B62EEC38DF00B4C033 /* Alamofire */,
 				6E8B00EF2EF3F93B00AE94EF /* Kingfisher */,
+				6E443E332F4707EC00BF15A7 /* GoogleSignIn */,
 			);
 			productName = Moodify;
 			productReference = 6E45CD6A2ED326B7000B6598 /* Moodify.app */;
@@ -143,6 +146,7 @@
 				6E5BE3992EE5ACBA00825902 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				6E3834B52EEC38DF00B4C033 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				6E8B00EE2EF3F93B00AE94EF /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				6E443E322F4707EC00BF15A7 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 6E45CD6B2ED326B7000B6598 /* Products */;
@@ -384,6 +388,14 @@
 				minimumVersion = 5.10.2;
 			};
 		};
+		6E443E322F4707EC00BF15A7 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.1.0;
+			};
+		};
 		6E5BE3992EE5ACBA00825902 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -423,6 +435,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6E3834B52EEC38DF00B4C033 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		6E443E332F4707EC00BF15A7 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E443E322F4707EC00BF15A7 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
 		};
 		6E5BE39A2EE5ACBA00825902 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;

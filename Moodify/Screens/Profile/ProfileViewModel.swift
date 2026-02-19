@@ -45,5 +45,8 @@ final class ProfileViewModel {
     
     func logout() async throws {
         try await authService.logout()
+        SessionManager.clear()
+        UserDefaultsManager.shared.removeData(key: .isLoginWithGoogle)
+        
     }
 }
